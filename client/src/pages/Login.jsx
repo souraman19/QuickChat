@@ -2,11 +2,50 @@ import React from 'react';
 import { firebaseAuth } from '@/utils/FirebaseConfig';
 import { GoogleAuthProvider } from 'firebase/auth';
 import { signInWithPopup } from 'firebase/auth';
-import { FaGoogle, FaPhone } from 'react-icons/fa';
+import { FaGoogle, FaMicrosoft, FaPhone } from 'react-icons/fa';
+import { CHECK_USER_ROUTE } from '@/utils/ApiRoutes';
+import axios from 'axios';
+import { useRouter } from 'next/router';
+import { useStateProvider } from '@/context/Statecontext';
+import { reducerCases } from '@/context/Constants';
 
 function Login() {
+    const router = useRouter();
+
+    const [{}, dispatch] = useStateProvider();
+
     const handleLogin = async () => {
-        
+        const provider = new GoogleAuthProvider();
+        const {user:{
+            displayName: name,
+            email,
+            photoURL: profilePic,
+        }} = await signInWithPopup(firebaseAuth, provider);
+        // console.log(user);
+        try{
+            if(email){
+                const {data} = await axios.post(CHECK_USER_ROUTE, {email});
+                // console.log({data});
+                if(!data.status){
+                    dispatch({
+                        type: reducerCases.SET_NEW_USER, 
+                        newUser: true
+                    })
+                    dispatch({
+                        type: reducerCases.SET_USER_INFO,
+                        userInfo:{
+                            name, 
+                            email,
+                            profilePic,
+                            status:"",
+                        }
+                    })
+                    router.push("/onboarding");
+                }
+            }
+        }catch(err){
+            console.log(err);
+        }
     }
     
   return (
@@ -20,8 +59,8 @@ function Login() {
           Login with Google
         </button>
         <button style={styles.button}>
-          <FaPhone style={styles.icon} />
-          Login with Phone Number
+          <FaMicrosoft style={styles.icon} />
+          Login with Microsoft
         </button>
       </div>
       <style>{keyframes}</style>
