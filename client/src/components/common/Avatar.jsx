@@ -3,18 +3,27 @@ import { useState } from "react";
 import { FaCamera } from "react-icons/fa";
 import ContextMenu from "./ContextMenu";
 
-function Avatar({image , setImage, type, isContextVisible, setIsContextVisible}) {
+function Avatar({image , changeOption, setImage, type, isContextVisible, setIsContextVisible}) {
+
   const [hover, setHover] = useState(false); 
-  const [grabPhoto, setGrabPhoto] = useState(false);
+  const [grabPhoto, setGrabPhoto] = useState(false); 
   
-  useEffect(() => {
-    if(grabPhoto){
+  useEffect(() => { 
+
+    if(grabPhoto){ // If the grabPhoto state is true, the photo picker is opened
       const data = document.getElementById("photo-picker");
-      data.click();
+      data.click(); //The click() method simulates a mouse click on an element.
+      //This line programmatically triggers a click event on the file input element. This opens the file picker dialog, allowing the user to select a photo from their device.
+
+
+      //After selecting a file, the focus returns to the document, triggering the onfocus event handler on the document body.
       document.body.onfocus = (e) => {
         setTimeout(() => {
           setGrabPhoto(false);
         }, 1000);
+      // This ensures that the file picker dialog doesn't repeatedly open.
+
+
       }
     }
   }, [grabPhoto]);
@@ -31,16 +40,17 @@ function Avatar({image , setImage, type, isContextVisible, setIsContextVisible})
   return (
     <div style={{marginBottom:"1rem"}}>
       {
-        type === "sm" && 
+        type === "md" && 
         <div
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
           className="relative cursor-pointer z-0"
         >
-          <div style={{border: "2px solid red", borderRadius:"5px"}}>
-            <img src={image}  alt="avatar" className="" style={{ width: "10rem", height: "10rem" }}/>
+          <div style={{height:"10rem", width:"10rem", border: "2px solid red", borderRadius:"50%", overflow:"hidden"}}>
+            <img src={image}  alt="avatar" className="" style={{  borderRadius:"50%", height:"100%", width:"100%", objectFit:"cover"}}/>
           </div>
-          <div style={{display: "flex", justifyContent:"center" }}>
+          {changeOption && (
+            <div style={{display: "flex", justifyContent:"center" }}>
             <button 
               style={{cursor: "pointer"}}
               onClick={() => setIsContextVisible(true)}
@@ -49,8 +59,35 @@ function Avatar({image , setImage, type, isContextVisible, setIsContextVisible})
               <span> Change </span>
             </button>
           </div>
+          )}
         </div>
       } 
+      {
+        type === "sm" && 
+        <div
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          className="relative cursor-pointer z-0"
+          // style={{background: "grey"}}
+        >
+          <div style={{height:"3rem", width:"3rem", border: "2px solid red", borderRadius:"50%", overflow:"hidden"}}>
+            <img src={image}  alt="avatar" className="" style={{  borderRadius:"50%", height:"100%", width:"100%", objectFit:"cover"}}/>
+          </div>
+          {changeOption && (
+            <div style={{display: "flex", justifyContent:"center" }}>
+            <button 
+              style={{cursor: "pointer"}}
+              onClick={() => setIsContextVisible(true)}
+            >
+              <FaCamera />
+              <span> Change </span>
+            </button>
+          </div>
+          )}
+        </div>
+      } 
+
+
       {
         isContextVisible && (
           <div style={styles.overlay}> 
@@ -82,6 +119,7 @@ const styles = {
     alignItems: "center",
     justifyContent: "center",
     zIndex: 1000,
+    objectFit: "cover",
   },
 };
 

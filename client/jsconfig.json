@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
       "paths": {
-        "@/*": ["./src/*"]
+        "@/*": ["./src/*"]  // This will allow you to import files from the src directory using @
       }
     }
   }

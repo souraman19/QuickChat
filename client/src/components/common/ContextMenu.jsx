@@ -18,19 +18,28 @@ function ContextMenu({
   const [currentOption, setCurrentOption] = useState("Upload from device");
 
   const photoPickerChange = async (e) => {
-    console.log(e);
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    const data = document.createElement("img");
-    reader.onload = function (event) {
-      data.src = event.target.result;
-      data.setAttribute("data-src", event.target.result);
+    // console.log(e);
+    const file = e.target.files[0]; //extracts the first file from the file input element that triggered the event. e.target refers to the file input element, and files[0] is the first file in the list of selected files.
+    const reader = new FileReader(); //The FileReader object lets web applications asynchronously read the contents of files (or raw data buffers) stored on the user's computer, using File or Blob objects to specify the file or data to read.
+    const data = document.createElement("img");  //The document.createElement() method creates the HTML element specified by tagName.'
+
+    reader.onload = function (event) { //This line sets up an onload event handler for the FileReader. When the file is read successfully, this function is executed.
+      data.src = event.target.result; //src attribute of the img element to the result of the file read operation (a data URL representing the file's contents ).
+      data.setAttribute("data-src", event.target.result); //The setAttribute() method adds a new attribute or changes the value of an existing attribute on the specified element.
     };
-    reader.readAsDataURL(file);
-    setTimeout(() => {
+
+    reader.readAsDataURL(file); 
+    //The readAsDataURL method is used to read the contents of the specified Blob or File. 
+    //When the read operation is finished, the readyState becomes DONE, and triggers the onload event handler. 
+    //At that time, the result is a data URL that contains a base64-encoded string representing the file's contents.
+
+
+    //The delay might be added to ensure that the image is fully loaded and its data URL is properly set before updating the state.
+    setTimeout(() => { 
       setMyImage(data.src);
       setImage(data.src);
     }, 100);
+
   };
 
   const removeProfilePic = () => {
@@ -48,6 +57,13 @@ function ContextMenu({
   const uploadProfilePic = () => {
     uploadPhoto();
     setChangeImage(false);
+  };
+
+  const closeCamera = () => {
+    // if (videoRef.current.srcObject) {
+    //   videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+    // }
+    // setIsCameraOpen(false);
   };
 
   return (
@@ -69,7 +85,10 @@ function ContextMenu({
         >
           <FaWindowClose
             style={{ cursor: "pointer" }}
-            onClick={() => setIsContextVisible(false)}
+            onClick={() => {
+              setIsContextVisible(false);
+              // closeCamera();
+            }}
           />
           <div
             style={{
@@ -105,6 +124,7 @@ function ContextMenu({
           </div>
 
           {grabPhoto && <PhotoPicker onChange={photoPickerChange} />}
+
         </div>
       )}
 
@@ -125,7 +145,10 @@ function ContextMenu({
         >
           <FaWindowClose
             style={{ cursor: "pointer" }}
-            onClick={() => setIsContextVisible(false)}
+            onClick={() => {
+              setIsContextVisible(false);
+              // closeCamera();
+            }}
           />
           <div style={{ height: "10%", display: "flex", gap: "1.2rem" }}>
             <button
@@ -142,20 +165,24 @@ function ContextMenu({
             >
               Google Photos
             </button>
-            <button
-              onClick={() => uploadProfilePic()}
-              style={{
-                cursor: "pointer",
-                paddingLeft: "12px",
-                paddingRight: "12px",
-                borderBottom:
-                  currentOption === "Upload from device"
-                    ? "4px solid blue"
-                    : "2px solid black",
-              }}
-            >
-              Upload from device
-            </button>
+
+
+              <button
+                onClick={() => uploadProfilePic()}
+                style={{
+                  cursor: "pointer",
+                  paddingLeft: "12px",
+                  paddingRight: "12px",
+                  borderBottom:
+                    currentOption === "Upload from device"
+                      ? "4px solid blue"
+                      : "2px solid black",
+                }}
+              >
+                Upload from device
+              </button>
+
+
             <button
               style={{
                 cursor: "pointer",
@@ -170,6 +197,7 @@ function ContextMenu({
             >
               Get from Library
             </button>
+
             <button
               style={{
                 cursor: "pointer",
@@ -185,9 +213,13 @@ function ContextMenu({
               Take Photo
             </button>
           </div>
+
+
           <hr
             style={{ width: "100%", height: "1px", backgroundColor: "black"}}
           />
+
+
           <div style={{ height: "90%", backgroundColor: "grey" }}>
           <PhotoLibrary 
             currentOption={currentOption} 

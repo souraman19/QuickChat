@@ -1,58 +1,80 @@
 import React from 'react';
-import { firebaseAuth } from '@/utils/FirebaseConfig';
-import { GoogleAuthProvider } from 'firebase/auth';
-import { signInWithPopup } from 'firebase/auth';
+import { firebaseAuth } from '@/utils/FirebaseConfig'; 
+import { GoogleAuthProvider } from 'firebase/auth'; 
+import { signInWithPopup } from 'firebase/auth'; //firebase method to sign in with popup
 import { FaGoogle, FaMicrosoft, FaPhone } from 'react-icons/fa';
 import { CHECK_USER_ROUTE } from '@/utils/ApiRoutes';
-import axios from 'axios';
-import { useRouter } from 'next/router';
-import { useStateProvider } from '@/context/Statecontext';
-import { reducerCases } from '@/context/Constants';
+import axios from 'axios'; //axios for making http requests to the server
+import { useRouter } from 'next/router'; //Hook from Next.js for navigating between pages.
+import { useStateProvider } from '@/context/Statecontext'; //Custom hook for accessing the global state
+import { reducerCases } from '@/context/Constants'; 
+import { useEffect } from 'react'; 
 
 function Login() {
     const router = useRouter();
 
-    const [{}, dispatch] = useStateProvider();
+    const [{userInfo, newUser}, dispatch] = useStateProvider(); // ?? => 
+
+
+    useEffect(() => {
+      if(userInfo?.id && !newUser) router.push("/"); //not working right now as when we explicitely going to /login then newuser value is not saved and changed to intial as false
+    }, [userInfo, newUser]);
+
 
     const handleLogin = async () => {
-        const provider = new GoogleAuthProvider();
-        const {user:{
+        const provider = new GoogleAuthProvider(); 
+        const {user:{ 
             displayName: name,
             email,
             photoURL: profilePic,
-        }} = await signInWithPopup(firebaseAuth, provider);
+        }} = await signInWithPopup(firebaseAuth, provider); //signInWithPopup: Method that opens a popup for Google sign-in. It returns a user object which is destructured to get displayName, email, and photoURL.
         // console.log(user);
         try{
             if(email){
-                const {data} = await axios.post(CHECK_USER_ROUTE, {email});
-                // console.log({data});
-                if(!data.status){
-                    dispatch({
+                const {data} = await axios.post(CHECK_USER_ROUTE, {email}); 
+                // console.log(data);
+                if(!data.status){ //If the user is not found in the database, set newUser to true and navigate to the onboarding page.
+
+                  //dispatch: Sends actions to the reducer to update the global state
+                    dispatch({ //Dispatch an action to set the newUser state to true.
                         type: reducerCases.SET_NEW_USER, 
                         newUser: true
                     })
                     dispatch({
-                        type: reducerCases.SET_USER_INFO,
-                        userInfo:{
+                        type: reducerCases.SET_USER_INFO, // Action to set user information in the state.
+                        userInfo:{ 
                             name, 
                             email,
                             profilePic,
                             status:"",
                         }
                     })
-                    router.push("/onboarding");
+                    router.push("/onboarding"); //Navigate to the onboarding page.
+                } else {
+                  const {id, name, email, profilePic: profilePic, status} = data.data;
+                  // console.log(data.data);
+                  dispatch({
+                    type: reducerCases.SET_USER_INFO,
+                    userInfo:{id, name, email, profilePic, status}
+                  })
+                  router.push("/"); //Navigate to the home page.
                 }
             }
         }catch(err){
             console.log(err);
         }
     }
+
+
+
     
   return (
     <div style={styles.loginContainer}>
+
       <div style={styles.animationWrapper}>
         <div className="animation">QuickChat</div>
       </div>
+
       <div style={styles.buttonContainer}>
         <button style={styles.button} onClick={handleLogin}>
           <FaGoogle style={styles.icon} />
@@ -63,7 +85,11 @@ function Login() {
           Login with Microsoft
         </button>
       </div>
-      <style>{keyframes}</style>
+
+      <style>{keyframes}</style> 
+      {/* //Inject the keyframes into the component */}
+      {/* //embedding CSS keyframes animation directly into the JSX code */}
+
     </div>
   );
 }

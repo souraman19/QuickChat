@@ -5,20 +5,20 @@ export const initialState = {
     newUser: false,
 };
 
-const reducer = (state, action) => {
+const reducer = (state, action) => { //Reducer function to manage state changes.
     switch(action.type) {
-        case reducerCases.SET_USER_INFO:
+        case reducerCases.SET_USER_INFO: //Action to set user information in the state.
             return {
                 ...state,
                 userInfo: action.userInfo,
             };
-        case reducerCases.SET_NEW_USER:
+        case reducerCases.SET_NEW_USER:  //Action to set the newUser state to true.
             return {
                 ...state,
                 newUser: action.newUser,
             }
         default: 
-        return state;
+        return state; //Return the current state if no action type matches.
     }
 }
 

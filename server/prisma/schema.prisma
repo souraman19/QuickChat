@@ -1,17 +1,20 @@
-// This is your Prisma schema file,
+// This is your Prisma schema file, which defines your data model and how it interacts with your database
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-generator client {
-  provider = "prisma-client-js"
+generator client { 
+  provider = "prisma-client-js"   // This section configures how Prisma generates the client code for interacting with your database. In this case, it specifies prisma-client-js as the provider, which generates a JavaScript client for your Prisma schema.
 }
 
-datasource db {
+datasource db {    //section defines the data source for your Prisma schema
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 
-model user {
-  id Int @id @default(autoincrement())
+model user {  //This section defines a data model named user
+  id Int @id @default(autoincrement()) 
   email String @unique
+  name String @default("")
+  about String @default("")
+  profilePic String @default("")
 }

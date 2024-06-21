@@ -1,10 +1,11 @@
-import {PrismaClient} from '@prisma/client';
+import {PrismaClient} from '@prisma/client'; 
+//PrismaClient is a constructor function that creates a new PrismaClient instance. This instance is used to interact with the database.
 
-let prismaInstance = null;
+let prismaInstance = null; 
 
-function getPrismaInstance() {
+function getPrismaInstance() { 
     if(!prismaInstance) {
-        prismaInstance = new PrismaClient();
+        prismaInstance = new PrismaClient(); //Create a new PrismaClient instance if it doesn't already exist.
     }
     return prismaInstance;
 }
