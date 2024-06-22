@@ -3,6 +3,7 @@ import { reducerCases } from "./Constants";
 export const initialState = {
     userInfo: undefined,
     newUser: false,
+    contactsPage: false,
 };
 
 const reducer = (state, action) => { //Reducer function to manage state changes.
@@ -16,6 +17,11 @@ const reducer = (state, action) => { //Reducer function to manage state changes.
             return {
                 ...state,
                 newUser: action.newUser,
+            };
+        case reducerCases.SET_ALL_CONTACTS_PAGE:
+            return {
+                ...state,
+                contactsPage: !state.contactsPage, 
             }
         default: 
         return state; //Return the current state if no action type matches.

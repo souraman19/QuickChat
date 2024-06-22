@@ -1,6 +1,7 @@
 export const reducerCases = { 
     SET_USER_INFO: "SET_USER_INFO",
     SET_NEW_USER: "SET_NEW_USER",
+    SET_ALL_CONTACTS_PAGE:"SET_ALL_CONTACTS_PAGE",
 };
 
 //These properties are typically used as action types in a Redux or context API reducer

@@ -38,7 +38,8 @@ function Avatar({image , changeOption, setImage, type, isContextVisible, setIsCo
 
 
   return (
-    <div style={{marginBottom:"1rem"}}>
+    // <div style={{marginBottom:"1rem"}}>
+    <div >
       {
         type === "md" && 
         <div
@@ -68,9 +69,10 @@ function Avatar({image , changeOption, setImage, type, isContextVisible, setIsCo
           onMouseEnter={() => setHover(true)}
           onMouseLeave={() => setHover(false)}
           className="relative cursor-pointer z-0"
+          
           // style={{background: "grey"}}
         >
-          <div style={{height:"3rem", width:"3rem", border: "2px solid red", borderRadius:"50%", overflow:"hidden"}}>
+          <div style={{height:"2.3rem", width:"2.3rem", border: "2px solid red", borderRadius:"50%", overflow:"hidden"}}>
             <img src={image}  alt="avatar" className="" style={{  borderRadius:"50%", height:"100%", width:"100%", objectFit:"cover"}}/>
           </div>
           {changeOption && (

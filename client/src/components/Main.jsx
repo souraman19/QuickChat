@@ -1,6 +1,8 @@
 import React from "react";
 import ChatList from "./chatlist/ChatList";
 import Empty from "./Empty";
+import Chat from "./chat/Chat";
+import LeftMenuBar from "./LeftMenuBar/LeftMenuBar";
 import { onAuthStateChanged } from "firebase/auth";
 import { CHECK_USER_ROUTE } from "@/utils/ApiRoutes";
 import {useRouter} from "next/router";
@@ -9,6 +11,7 @@ import { reducerCases } from "@/context/Constants";
 import { firebaseAuth } from "@/utils/FirebaseConfig";
 import axios from "axios";
 import { useEffect, useState } from "react";
+import GapLeftOfChatList from "./GapLeftOfChatList";
 
 function Main() {
   const router = useRouter();
@@ -43,8 +46,11 @@ function Main() {
 
 
   return <div style={styles.outerContainer}>
+    <LeftMenuBar />
+    <GapLeftOfChatList />
     <ChatList />
-    <Empty /> 
+    {/* <Empty />  */}
+    <Chat />
   </div>;
 }
 
@@ -52,7 +58,7 @@ function Main() {
 const styles = {
   outerContainer:{
     display: "grid",
-    gridTemplateColumns: "1fr 2.7fr",
+    gridTemplateColumns: "0.7fr 0.07fr 4.5fr 12fr",
     overflow: "hidden",
     height:"100vh",
     width: "100vw"
