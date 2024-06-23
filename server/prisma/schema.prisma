@@ -17,4 +17,18 @@ model user {  //This section defines a data model named user
   name String @default("")
   about String @default("")
   profilePic String @default("")
+  sentMessages messages[] @relation("sentMessages")
+  recievedMessages messages[] @relation("recievedMessages")
+}
+
+model messages {
+  id Int @id @default(autoincrement())
+  sender user @relation("sentMessages", fields:[senderId], references:[id])
+  senderId Int
+  reciever user @relation("recievedMessages", fields:[recieverId], references:[id])
+  recieverId Int
+  type String @default("text")
+  message String
+  messageStatus String @default("seen")
+  createdAt DateTime @default(now())
 }

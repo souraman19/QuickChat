@@ -6,18 +6,18 @@ import { useStateProvider } from "@/context/Statecontext";
 
 
 function ChatHeader() {
-  const [{userInfo}] = useStateProvider();
+  const [{userInfo, currentChatUser}] = useStateProvider();
   // console.log(userInfo);
   return (
     <div style={styles.outermostContainer}>
 
       <div style={styles.leftContainer}>
         <div style={styles.AvatarDiv}>
-          <Avatar type={"sm"} image={"./bailu.jpg"} changeOption={false} />
+          <Avatar type={"sm"} image={currentChatUser?.profilePic} changeOption={false} />
         </div>
         <div style={styles.nameWithOnlineStatus}>
-          <div style={styles.NameStyle}>Bai Lu</div>
-          <div style={styles.statusStyle}>Online</div>
+          <div style={styles.NameStyle}>{currentChatUser?.name || `Bai Strisker`}</div>
+          <div style={styles.statusStyle}>online</div>
         </div>
       </div>
 
@@ -67,8 +67,8 @@ const styles = {
   nameWithOnlineStatus: {
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
+    // alignItems: "center",
+    // justifyContent: "center",
     // border: "1px solid green",
   },
   NameStyle: {
@@ -76,6 +76,8 @@ const styles = {
   },
   statusStyle: {
     fontSize: "0.8rem",
+    justifyContent:"left",
+    marginLeft:"0.2rem",
     // backgroundColor: "red",
   },
   IoIcon: {

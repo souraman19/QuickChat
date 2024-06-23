@@ -4,7 +4,7 @@ import Empty from "./Empty";
 import Chat from "./chat/Chat";
 import LeftMenuBar from "./LeftMenuBar/LeftMenuBar";
 import { onAuthStateChanged } from "firebase/auth";
-import { CHECK_USER_ROUTE } from "@/utils/ApiRoutes";
+import { CHECK_USER_ROUTE, GET_MESSAGES, HOST } from "@/utils/ApiRoutes";
 import {useRouter} from "next/router";
 import { useStateProvider } from "@/context/Statecontext";
 import { reducerCases } from "@/context/Constants";
@@ -12,11 +12,15 @@ import { firebaseAuth } from "@/utils/FirebaseConfig";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import GapLeftOfChatList from "./GapLeftOfChatList";
+import { io } from "socket.io-client";
+import { useRef } from "react";
 
 function Main() {
   const router = useRouter();
-  const [{userInfo}, dispatch] = useStateProvider();
+  const [{userInfo, currentChatUser}, dispatch] = useStateProvider();
   const [redirectLogin, setRedirectLogin] = useState(false);
+  const [socketEvent, setSocketEvent] = useState(false); // to prevent multiple event listeners on socket
+  const socket = useRef();
 
   useEffect(() => {
     if(redirectLogin) router.push("/login"); 
@@ -44,13 +48,53 @@ function Main() {
   })
 
 
+  useEffect(() => { 
+    if(userInfo) { 
+      socket.current = io(HOST); //connect to the socket
+      socket.current.emit("add-user", userInfo.id); 
+      dispatch({type: reducerCases.SET_SOCKET, socket}); 
+    }
+  }, [userInfo]); 
+
+
+  useEffect(() => {
+    if(socket.current && !socketEvent){ 
+      socket.current.on("msg-receive", (data) => {
+        dispatch({
+          type: reducerCases.ADD_MESSAGE, 
+          newMessage:{
+            ...data.message
+          }
+        });
+      })
+      setSocketEvent(true); //to prevent multiple event listeners
+    }
+  }, [socket.current])
+
+  useEffect(() => {
+    try{
+      const getMessages = async () => {
+        const { data:{messages} } = await axios.get(`${GET_MESSAGES}/${userInfo?.id}/${currentChatUser?.id}`);
+        dispatch({type: reducerCases.SET_MESSAGES, messages})
+      };
+      if(userInfo.id !== undefined && currentChatUser?.id){
+        getMessages();
+      }
+    }catch(err){
+      console.log(err);
+    }
+
+  }, [currentChatUser])
+
+
 
   return <div style={styles.outerContainer}>
     <LeftMenuBar />
     <GapLeftOfChatList />
     <ChatList />
+    {currentChatUser ? <Chat /> : <Empty />}
     {/* <Empty />  */}
-    <Chat />
+    {/* <Chat /> */}
   </div>;
 }
 

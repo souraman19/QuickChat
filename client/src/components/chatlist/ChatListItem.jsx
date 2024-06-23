@@ -1,8 +1,17 @@
 import React from "react";
 import { useState } from "react";
 import Avatar from "../common/Avatar";
+import { reducerCases } from "@/context/Constants";
+import { useStateProvider } from "@/context/Statecontext";
 
-function ChatListItem({ data, key, isContact }) {
+function ChatListItem({ data, isContact = false }) {
+  const [{ userInfo, currentChatUser }, dispatch] = useStateProvider();
+  const handleClick = () => {
+    // if(currentChatUser?.id === data?.id){
+      dispatch({type: reducerCases.CHANGE_CURRENT_CHAT_USER, user:{ ...data}});
+      dispatch({type: reducerCases.SET_ALL_CONTACTS_PAGE});
+    // }
+  }
   const [hover, setHover] = useState(false);
 
   return (
@@ -10,6 +19,7 @@ function ChatListItem({ data, key, isContact }) {
       style={{...styles.outermostDiv, backgroundColor: hover ? "#f0f0f6" : "white"}}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+      onClick={handleClick}
     >
 
       <div style={styles.AvatarDiv}>

@@ -19,7 +19,7 @@ function ContactsList() {
           data: { users },
         } = await axios.get(GET_ALL_CONTACTS);
         setAllContacts(users);
-        console.log(data);
+        // console.log(data);
       } catch (err) {
         console.log(err);
       }
