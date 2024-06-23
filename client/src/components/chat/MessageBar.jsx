@@ -7,10 +7,49 @@ import { AiOutlineAudio } from 'react-icons/ai';
 import { ADD_NEW_MESSAGE } from "@/utils/ApiRoutes";
 import { useStateProvider } from "@/context/Statecontext";
 import axios from "axios";
+import { reducerCases } from "@/context/Constants";
+import EmojiPicker from "emoji-picker-react";
+import { useEffect } from "react";
+import { useState } from "react";
 
 function MessageBar(){
     const [{userInfo, currentChatUser, socket}, dispatch] = useStateProvider();
     const [message, setMessage] = React.useState("");
+    const [showEmojiList, setShowEmojiList] = useState(false);
+    const emojiRef = React.useRef(null);
+    
+    useEffect(() => {
+        const handleClickedOutSide = (e) => {
+            // alert("a");
+            if(e.target.id !== "emojiPickerList"){
+                // alert("b");
+                // console.log(emojiRef.current);
+                // console.log(e.target);
+                // console.log(e.target.id);
+                // console.log(emojiRef.current?.contains(e.target));
+                if(emojiRef.current && !emojiRef.current.contains(e.target)){
+                    // alert("c");
+                    setShowEmojiList(false);
+                    // alert(showEmojiList);
+                }
+            }
+        };
+            document.addEventListener("click", handleClickedOutSide);
+        return () => {
+            document.removeEventListener("click", handleClickedOutSide);
+        }
+    }, []);
+
+    const handleEmojiShow = () => {
+        // alert("Emoji Clicked");
+        setShowEmojiList(!showEmojiList);
+    }
+
+    const handleEmojiClick = (emoji) => {
+        setMessage((prevMessage) => prevMessage += emoji.emoji);
+    }
+
+
 
     const sendMessageHandler = async() => {
         try{
@@ -24,6 +63,13 @@ function MessageBar(){
                 toUser: currentChatUser?.id,
                 fromUser: userInfo?.id,
                 message: data.message,
+            });
+            dispatch({
+                type: reducerCases.ADD_MESSAGE,
+                newMessage: {
+                    ...data.message,
+                },
+                fromSelf: true,
             })
             setMessage("");
         }catch(err){
@@ -34,7 +80,17 @@ function MessageBar(){
     
     return (<div style={styles.outermostContainer}>
         <div style = {styles.emojistyle}>
-            <AiOutlineSmile style = {styles.iconStyle}/>
+            <AiOutlineSmile 
+                style = {styles.iconStyle}
+                onClick={() => handleEmojiShow()}
+            />
+            {showEmojiList && 
+                        <EmojiPicker 
+                        style={{ position: "absolute", bottom: "3rem", left:"24rem" }}
+                        id = "emojiPickerList"
+                        ref={emojiRef}
+                        onEmojiClick={handleEmojiClick} />
+            }
         </div>
         <div style = {styles.textboxdiv}>
             <input type="text" 

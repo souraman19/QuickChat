@@ -5,11 +5,10 @@ import AuthRoutes from "./routes/AuthRoutes.js";
 import MessageRoutes from "./routes/MessageRoutes.js";
 import {Server} from "socket.io";
 
-
 dotenv.config() //This will load the environment variables from the .env file into process.env.
-const app = express() 
+const app = express();
 
-app.use(cors()) 
+app.use(cors())
 app.use(express.json()) //This will parse the incoming request body and make it available under req.body.   
 
 

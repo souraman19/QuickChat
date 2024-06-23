@@ -26,27 +26,89 @@ function Main() {
     if(redirectLogin) router.push("/login"); 
   }, [redirectLogin])
 
+  //<<---------------------------{{{{ Changed Code }}}}------------------------------------------------------------------------>>
 
-  onAuthStateChanged(firebaseAuth, async (currentUser) => {
-    if(!currentUser) setRedirectLogin(true);
-    if(!userInfo && currentUser?.email) {
-        const data = await axios.post(CHECK_USER_ROUTE, {email: currentUser.email});
-        if(!data.status){
-          router.push("/login");
-        }
-        if(data?.data){
-          const {id, name, email, profilePic, status} = data.data;
-          dispatch({type: reducerCases.SET_USER_INFO, userInfo: {
-            id,
-            name,
-            email,
-            profilePic,
-            status
-          }})
-        }
-    }
-  })
+  // onAuthStateChanged(firebaseAuth, async (currentUser) => {
+  //   if(!currentUser) setRedirectLogin(true);
+  //   if(!userInfo && currentUser?.email) {
+  //       const data = await axios.post(CHECK_USER_ROUTE, {email: currentUser.email});
+  //       if(!data.status){
+  //         router.push("/login");
+  //       }
+  //       if(data?.data){
+  //         const {id, name, email, profilePic, status} = data.data;
+  //         dispatch({type: reducerCases.SET_USER_INFO, userInfo: {
+  //           id,
+  //           name,
+  //           email,
+  //           profilePic,
+  //           status
+  //         }})
+  //       }
+  //   }
+  // });
 
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(firebaseAuth, async (currentUser) => {
+        if (!currentUser) {
+            router.push("/login");
+            return;
+        }
+        if (currentUser?.email) {
+            try {
+                const { email } = currentUser;
+                const { data } = await axios.post(CHECK_USER_ROUTE, { email });
+                if (data?.status) {
+                    const { id, name, email, profilePic, status } = data.data;
+                    dispatch({
+                        type: reducerCases.SET_USER_INFO,
+                        userInfo: {
+                            id,
+                            name,
+                            email,
+                            profilePic,
+                            status
+                        }
+                    });
+                } else {
+                    router.push("/onboarding");
+                }
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                router.push("/login");
+            }
+        }
+    });
+
+    return () => unsubscribe();
+}, [router, dispatch]);
+
+
+
+
+//   useEffect(() => {
+//     const unsubscribe = onAuthStateChanged(firebaseAuth, async (currentUser) => {
+//         if (currentUser) {
+//             const { email } = currentUser;
+//             const { data } = await axios.post(CHECK_USER_ROUTE, { email });
+//             if (data.status) {
+//                 dispatch({
+//                     type: reducerCases.SET_USER_INFO,
+//                     userInfo: data.data
+//                 });
+//             } else {
+//                 router.push("/onboarding");
+//             }
+//         } else {
+//             router.push("/login");
+//         }
+//     });
+
+//     return () => unsubscribe();
+// }, [router, dispatch]);
+
+
+  //<<---------------------------------------------------------------------------------------------------
 
   useEffect(() => { 
     if(userInfo) { 
