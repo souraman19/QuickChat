@@ -1,5 +1,6 @@
 import express from "express";
 import getPrismaInstance from "../utils/PrismaClient.js";
+import { renameSync } from "fs";
 
 export const addMessage = async(req, res, next) => {
     try{
@@ -11,12 +12,12 @@ export const addMessage = async(req, res, next) => {
                 data:{
                     message,
                     sender: {connect : {id: parseInt(fromUser)}},
-                    reciever: {connect : {id: parseInt(toUser)}},
+                    receiver: {connect : {id: parseInt(toUser)}},
                     messageStatus: getUser ? "delivered" : "sent",
                 },
                 include:{
                     sender: true, 
-                    reciever: true
+                    receiver: true
                 },
             });
             return res.status(200).send({message: newMessage});
@@ -37,11 +38,11 @@ export const getMessages = async(req, res, next) => {
                 OR:[
                     {
                         senderId: parseInt(fromUser),
-                        recieverId: parseInt(toUser),   
+                        receiverId: parseInt(toUser),   
                     },
                     {
                         senderId: parseInt(toUser),
-                        recieverId: parseInt(fromUser),
+                        receiverId: parseInt(fromUser),
                     }
                 ]
             },
@@ -75,4 +76,32 @@ export const getMessages = async(req, res, next) => {
     }
 }
 
+export const addImageMessage = async(req, res, next) => {
+    try{
+        if(req.file){
+            const date = Date.now();
+            
+            let filename = "uploads/images/" + date + req.file.originalname;
 
+
+            renameSync(req.file.path, filename);
+            const prisma = getPrismaInstance();
+            const {fromUser, toUser} = req.query;
+            if(fromUser &&  toUser){
+                const message = await prisma.messages.create({
+                    data:{
+                        message: filename, 
+                        sender: {connect: {id: parseInt(fromUser)}},
+                        receiver: {connect: {id: parseInt(toUser)}},
+                        type: "image",
+                    },
+                });
+                return res.status(201).send({ message });
+            }
+            return res.status(400).send("fromUser and toUser is required");
+        }
+        return res.status(400).send("Image is required");
+    }catch(err){
+        next(err);
+    }
+}

@@ -2,6 +2,8 @@ import React from "react";
 import { useStateProvider } from "@/context/Statecontext";
 import { calculateTime } from "@/utils/CalculateTime";
 import MessageStatus from "../common/MessageStatus";
+import ImageMessage from "./ImageMessage";
+import { HOST } from "@/utils/ApiRoutes";
 
 function ChatContainer() {
   const [{ userInfo, currentChatUser, messages }, dispatch] =
@@ -9,31 +11,49 @@ function ChatContainer() {
 
   return (
     <>
-    
-    <div style={styles.outermostdiv}>
-      <div style={styles.allmessagesDiv}>
-        {messages.map((message, index) => {
-          return (
-            <div key={index} style={dynamicStyles(message, userInfo).singleMessage}>
-              <div style={dynamicStyles(message, userInfo).messageBubble}>
-                <div style={styles.messageText}>{message.message}</div>
-                <div style={styles.timeWithStatus}>
-                  <div style={styles.timeStyle}>
-                    {calculateTime(message.createdAt)}
-                  </div>
-                  <div style={styles.messageStatus}>
-                    {message.senderId === userInfo.id && (
-                      <MessageStatus messageStatus={message.messageStatus} />
-                    )}
-                  </div>
+      <div style={styles.outermostdiv}>
+        <div style={styles.allmessagesDiv}>
+          {messages.map((message, index) => {
+            return (
+              <>
+                <div
+                  key={index}
+                  style={dynamicStyles(message, userInfo).singleMessage}
+                >
+
+
+                  {message.type === "text" && (
+                    <div style={dynamicStyles(message, userInfo).messageBubble}>
+                      <div style={styles.messageText}>{message.message}</div>
+                      <div style={styles.timeWithStatus}>
+                        <div style={styles.timeStyle}>
+                          {calculateTime(message.createdAt)}
+                        </div>
+                        <div style={styles.messageStatus}>
+                          {message.senderId === userInfo.id && (
+                            <MessageStatus
+                              messageStatus={message.messageStatus}
+                            />
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {message.type === "image" && (
+                    <>
+                      <ImageMessage message={message} />
+                      {console.log(`${HOST}/${message.message}`)}
+                    </>
+                  )}
+
                 </div>
-              </div>
-            </div>
-          );
-        })}
+              </>
+            );
+          })}
+        </div>
       </div>
-    </div>
-    <style>
+      <style>
         {`
           .custom-scrollbar::-webkit-scrollbar {
             width: 12px;
@@ -63,11 +83,11 @@ function ChatContainer() {
 const styles = {
   outermostdiv: {
     // overflowY:"hidden",
-    maxHeight: '83vh',
+    maxHeight: "83vh",
     height: "100%",
     width: "100%",
-    overflowY:"auto",
-    overflowX:"hidden",
+    overflowY: "auto",
+    overflowX: "hidden",
   },
   allmessagesDiv: {
     height: "100%",
@@ -101,7 +121,8 @@ const styles = {
 const dynamicStyles = (message, userInfo) => ({
   singleMessage: {
     display: "flex",
-    justifyContent: message.senderId === userInfo.id ? "flex-end" : "flex-start",
+    justifyContent:
+      message.senderId === userInfo.id ? "flex-end" : "flex-start",
     padding: "4px 0",
   },
   messageBubble: {

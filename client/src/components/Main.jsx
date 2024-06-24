@@ -15,7 +15,7 @@ import GapLeftOfChatList from "./GapLeftOfChatList";
 import { io } from "socket.io-client";
 import { useRef } from "react";
 
-function Main() {
+function Main() { 
   const router = useRouter();
   const [{userInfo, currentChatUser}, dispatch] = useStateProvider();
   const [redirectLogin, setRedirectLogin] = useState(false);
@@ -126,7 +126,8 @@ function Main() {
           type: reducerCases.ADD_MESSAGE, 
           newMessage:{
             ...data.message
-          }
+          },
+          fromSelf: false,
         });
       })
       setSocketEvent(true); //to prevent multiple event listeners

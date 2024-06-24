@@ -4,19 +4,21 @@ import { FaWallet } from 'react-icons/fa';
 import { IoMdSend } from "react-icons/io";
 import { AiOutlinePaperClip } from 'react-icons/ai';
 import { AiOutlineAudio } from 'react-icons/ai';
-import { ADD_NEW_MESSAGE } from "@/utils/ApiRoutes";
+import { ADD_IMAGE_MESSAGE, ADD_NEW_MESSAGE } from "@/utils/ApiRoutes";
 import { useStateProvider } from "@/context/Statecontext";
 import axios from "axios";
 import { reducerCases } from "@/context/Constants";
 import EmojiPicker from "emoji-picker-react";
 import { useEffect } from "react";
 import { useState } from "react";
+import PhotoPicker from "./../common/PhotoPicker";   
 
 function MessageBar(){
     const [{userInfo, currentChatUser, socket}, dispatch] = useStateProvider();
     const [message, setMessage] = React.useState("");
     const [showEmojiList, setShowEmojiList] = useState(false);
     const emojiRef = React.useRef(null);
+    const [grabPhoto, setGrabPhoto] = useState(false);
     
     useEffect(() => {
         const handleClickedOutSide = (e) => {
@@ -39,6 +41,93 @@ function MessageBar(){
             document.removeEventListener("click", handleClickedOutSide);
         }
     }, []);
+
+
+
+    useEffect(() => { 
+
+        if(grabPhoto){ // If the grabPhoto state is true, the photo picker is opened
+          const data = document.getElementById("photo-picker");
+          data.click(); //The click() method simulates a mouse click on an element.
+          //This line programmatically triggers a click event on the file input element. This opens the file picker dialog, allowing the user to select a photo from their device.
+
+          //After selecting a file, the focus returns to the document, triggering the onfocus event handler on the document body.
+          document.body.onfocus = (e) => {
+            setTimeout(() => {
+              setGrabPhoto(false);
+            }, 1000);
+          // This ensures that the file picker dialog doesn't repeatedly open.
+    
+    
+          }
+        }
+      }, [grabPhoto]);
+
+          const addMessageToState = (message, fromSelf) => {
+            dispatch({
+                type: reducerCases.ADD_MESSAGE,
+                newMessage: message,
+                fromSelf,
+            });
+        };
+
+
+    //   useEffect(() => {
+    //       if (socket.current && !socketEvent) {
+    //           socket.current.on("msg-receive", (data) => {
+    //             alert(socketEvent + "1");
+    //             // alert("1");
+    //             dispatch({
+    //                 type: reducerCases.ADD_MESSAGE,
+    //                 newMessage: {
+    //                     ...data.message,
+    //                 },
+    //                 fromSelf: false,
+    //             });
+    //             setSocketEvent(true);
+    //             alert(socketEvent+ "02");
+    //         });
+    //         // alert(socketEvent+ "3");
+
+    //     }
+    // }, [socket.current]);
+
+
+    const photoPickerChange = async (e) => {
+        try{
+        const file = e.target.files[0];
+        const formData = new FormData();
+        formData.append("image", file);
+        const response = await axios.post(ADD_IMAGE_MESSAGE, formData, {
+            headers: {
+                "Content-Type": "multiport/form-data",
+            },
+            params: {
+                fromUser: userInfo?.id,
+                toUser: currentChatUser?.id,
+            },
+        });
+        if(response.status === 201){
+            socket.current.emit("send-msg", { //This will emit the send-msg event to the server with the message data.
+                toUser: currentChatUser?.id,
+                fromUser: userInfo?.id,
+                message: response.data.message,
+            });
+            // addMessageToState(data.message, true);
+            dispatch({
+                type: reducerCases.ADD_MESSAGE,
+                newMessage: {
+                    ...response.data.message,
+                },
+                fromSelf: true,
+            })
+            setMessage("");
+        }
+        }catch(err){
+            console.error(err);
+        }
+      };
+
 
     const handleEmojiShow = () => {
         // alert("Emoji Clicked");
@@ -107,9 +196,13 @@ function MessageBar(){
 
             />
             <AiOutlineAudio style = {styles.iconStyle}/>
-            <AiOutlinePaperClip style = {styles.iconStyle}/>
+            <AiOutlinePaperClip 
+                style = {styles.iconStyle}
+                onClick={() => setGrabPhoto(true)}
+            />
             <FaWallet style = {styles.WalleticonStyle}/>
         </div>
+        {grabPhoto && <PhotoPicker onChange={photoPickerChange} />}
     </div>);
 }
 

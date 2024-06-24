@@ -4,6 +4,14 @@ import dotenv from "dotenv" //dotenv is a zero-dependency module that loads envi
 import AuthRoutes from "./routes/AuthRoutes.js"; 
 import MessageRoutes from "./routes/MessageRoutes.js";
 import {Server} from "socket.io";
+import path from 'path';
+import { fileURLToPath } from 'url';
+import multer from 'multer';
+
+
+// Define __dirname for ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config() //This will load the environment variables from the .env file into process.env.
 const app = express();
@@ -15,6 +23,17 @@ app.use(express.json()) //This will parse the incoming request body and make it 
 app.get('/', (req, res) => { //This is a simple route that sends a response to the client when the client makes a GET request to the root URL.
     res.send('Happy Journey');
 })
+
+
+
+const uploadImage = multer({ dest: path.join(__dirname, "uploads/images/") });
+
+app.use("/uploads/images", express.static(path.join(__dirname, 'uploads/images')));
+
+
+
+//app.use("/uploads/images", express.static(path.join(__dirname, 'uploads/images')));
+    // app.use("/uploads/images/", express.static("/uploads/images/"));
 
 app.use("/api/auth", AuthRoutes); //This will use the AuthRoutes for any request that starts with /api/auth.
 app.use("/api/messages", MessageRoutes); 
@@ -31,11 +50,14 @@ const io = new Server(server, {
 });
 
 global.onlineUsers = new Map(); 
+
 io.on("connection", (socket) => {
     global.chatSocket = socket;
+
     socket.on("add-user", (userId) => { //This event is triggered when a new user connects to the socket.
         onlineUsers.set(userId, socket.id); //This will add the user to the onlineUsers map with the user id as the key and the socket id as the value.
     });
+
     socket.on("send-msg", (data) => { 
         const sendUserSocket = onlineUsers.get(data.toUser); 
         if(sendUserSocket){ 

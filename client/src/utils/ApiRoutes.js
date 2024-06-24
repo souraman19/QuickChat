@@ -9,3 +9,4 @@ export const GET_ALL_CONTACTS = `${AUTH_ROUTES}/getall-users`;
 
 export const ADD_NEW_MESSAGE = `${MESSAGE_ROUTES}/add-new-message`;
 export const GET_MESSAGES = `${MESSAGE_ROUTES}/get-messages`;
+export const ADD_IMAGE_MESSAGE = `${MESSAGE_ROUTES}/add-image-message`
