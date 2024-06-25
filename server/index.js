@@ -31,6 +31,11 @@ const uploadImage = multer({ dest: path.join(__dirname, "uploads/images/") });
 app.use("/uploads/images", express.static(path.join(__dirname, 'uploads/images')));
 
 
+const uploadAudio = multer({ dest: path.join(__dirname, "uploads/recordings/") });
+
+app.use("/uploads/recordings", express.static(path.join(__dirname, 'uploads/recordings')));
+
+
 
 //app.use("/uploads/images", express.static(path.join(__dirname, 'uploads/images')));
     // app.use("/uploads/images/", express.static("/uploads/images/"));

@@ -4,6 +4,8 @@ import { calculateTime } from "@/utils/CalculateTime";
 import MessageStatus from "../common/MessageStatus";
 import ImageMessage from "./ImageMessage";
 import { HOST } from "@/utils/ApiRoutes";
+import dynamic from "next/dynamic";
+const VoiceMessage = dynamic(() => import("./VoiceMessage"), {ssr: false});
 
 function ChatContainer() {
   const [{ userInfo, currentChatUser, messages }, dispatch] =
@@ -23,7 +25,9 @@ function ChatContainer() {
 
 
                   {message.type === "text" && (
-                    <div style={dynamicStyles(message, userInfo).messageBubble}>
+                    <div style={
+                      
+                      dynamicStyles(message, userInfo).messageBubble}>
                       <div style={styles.messageText}>{message.message}</div>
                       <div style={styles.timeWithStatus}>
                         <div style={styles.timeStyle}>
@@ -43,7 +47,12 @@ function ChatContainer() {
                   {message.type === "image" && (
                     <>
                       <ImageMessage message={message} />
-                      {console.log(`${HOST}/${message.message}`)}
+                      {/* {console.log(`${HOST}/${message.message}`)} */}
+                    </>
+                  )}
+                  {message.type === "audio" &&  (
+                    <>
+                      <VoiceMessage message={message} />
                     </>
                   )}
 

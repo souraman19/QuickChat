@@ -55,6 +55,8 @@ function Main() {
             return;
         }
         if (currentUser?.email) {
+
+          
             try {
                 const { email } = currentUser;
                 const { data } = await axios.post(CHECK_USER_ROUTE, { email });
