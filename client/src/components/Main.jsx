@@ -17,7 +17,7 @@ import { useRef } from "react";
 
 function Main() { 
   const router = useRouter();
-  const [{userInfo, currentChatUser}, dispatch] = useStateProvider();
+  const [{userInfo, currentChatUser, messagesSearch}, dispatch] = useStateProvider();
   const [redirectLogin, setRedirectLogin] = useState(false);
   const [socketEvent, setSocketEvent] = useState(false); // to prevent multiple event listeners on socket
   const socket = useRef();

@@ -3,10 +3,11 @@ import Avatar from "./../common/Avatar";
 import { IoMdSearch } from "react-icons/io";
 import { IoEllipsisVertical, IoCall, IoVideocam } from 'react-icons/io5';
 import { useStateProvider } from "@/context/Statecontext";
+import { reducerCases } from "@/context/Constants";
 
 
 function ChatHeader() {
-  const [{userInfo, currentChatUser}] = useStateProvider();
+  const [{userInfo, currentChatUser}, dispatch] = useStateProvider();
   // console.log(userInfo);
   return (
     <div style={styles.outermostContainer}>
@@ -24,7 +25,9 @@ function ChatHeader() {
       <div style={styles.rightContainer}>
         <IoCall style={styles.IoIcon} />
         <IoVideocam style={styles.IoIcon} />
-        <IoMdSearch style={styles.IoIcon} />
+        <IoMdSearch style={{...styles.IoIcon, cursor: "pointer"} }
+          onClick={() => dispatch({type: reducerCases.SET_MESSAGE_SEARCH})}
+        />
         <IoEllipsisVertical style={styles.IoIcon} />
       </div>
     </div>

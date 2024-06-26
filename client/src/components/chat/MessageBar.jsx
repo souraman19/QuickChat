@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import PhotoPicker from "./../common/PhotoPicker";
 import dynamic from "next/dynamic";
+
 const CaptureAudio = dynamic(() => import("../common/CaptureAudio"), {
     ssr: false,
 });
