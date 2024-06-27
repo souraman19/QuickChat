@@ -4,28 +4,46 @@ import React, { useState } from "react";
 import { useEffect } from "react";
 import { BiArrowBack } from "react-icons/bi";
 import { IoMdSearch } from "react-icons/io";
-import axios from "axios";
+import axios, { all } from "axios";
 import ChatListItem from "./ChatListItem";
 
 function ContactsList() {
   const [allContacts, setAllContacts] = useState([]);
   const [{}, dispatch]  = useStateProvider();
-
+  const [searchText, setSearchText] = useState("");
+  const [searchedContacts, setSearchedContacts] = useState([]);
+  
+  
   useEffect(() => {
-    //runs only one time means at the time of intial render
     const getAllContacts = async () => {
       try {
         const {
           data: { users },
         } = await axios.get(GET_ALL_CONTACTS);
         setAllContacts(users);
-        // console.log(data);
+        setSearchedContacts(users);
       } catch (err) {
         console.log(err);
       }
     };
     getAllContacts();
   }, []);
+
+
+  useEffect(() => {
+    if(searchText.length > 0) {
+      const filteredData = {};
+      Object.keys(allContacts).forEach((key) => {
+        filteredData[key] = allContacts[key].filter((obj) => {
+          return obj.name.toLowerCase().includes(searchText.toLowerCase());
+        });  
+      });
+      setSearchedContacts(filteredData);
+    } else {
+      setSearchedContacts(allContacts);
+    }
+  }, [searchText]);
+
 
   return (
     <div style={styles.outermostDiv}>
@@ -39,14 +57,21 @@ function ContactsList() {
         </div>
         <div style={styles.searchDiv}>
           <IoMdSearch style={styles.iomdsearch} />
-          <input type="text" placeholder="Search contacts" style={styles.inputArea}/>
+          <input 
+            type="text" 
+            value = {searchText}
+            onChange = {(e) => setSearchText(e.target.value)}
+            placeholder="Search contacts" 
+            style={styles.inputArea}
+          />
         </div>
       </div>
       {
-        Object.entries(allContacts).map(([initialLetter, userList]) => {
+        Object.entries(searchedContacts).map(([initialLetter, userList]) => {
+          // console.log(allContacts);
           return (
             <div 
-              key = {Date.now() + initialLetter}
+              key = {Date.now() + initialLetter}  
               style = {styles.SingleLetterContactList}
             >
               {/* <span>{initialLetter}</span> */}

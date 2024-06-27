@@ -28,7 +28,7 @@ function List() {
   }, [contactSearch])
 
   return <div>
-    {contactSearch !== "" ?
+    {contactSearch !== "" && contactSearch !== undefined ?
       (
         filteredContacts.map((contact) => (
           <ChatListItem data = {contact} key={contact.id} />
