@@ -11,3 +11,4 @@ export const ADD_NEW_MESSAGE = `${MESSAGE_ROUTES}/add-new-message`;
 export const GET_MESSAGES = `${MESSAGE_ROUTES}/get-messages`;
 export const ADD_IMAGE_MESSAGE = `${MESSAGE_ROUTES}/add-image-message`;
 export const ADD_AUDIO_MESSAGE = `${MESSAGE_ROUTES}/add-audio-message`;
+export const GET_INITIAL_CONTACTS = `${MESSAGE_ROUTES}/get-initial-contacts`;

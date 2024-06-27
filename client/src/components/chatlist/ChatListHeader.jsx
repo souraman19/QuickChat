@@ -7,7 +7,7 @@ import { reducerCases } from "@/context/Constants";
 
 
 function ChatListHeader() {
-   const [{ userInfo }, dispatch] = useStateProvider();
+   const [{ userInfo, contactSearch }, dispatch] = useStateProvider();
     // console.log(userInfo);
 
     const handleNewChatContactPage = () => {
@@ -23,9 +23,13 @@ function ChatListHeader() {
         />
     </div>
     <div style = {styles.middleContainer}>
-        <span style={{fontSize:"1rem"}}>Chat</span>
-        <span style={{fontSize:"1rem"}}>Status</span>
-        <span style={{fontSize:"1rem"}}>Calls</span>
+        <input 
+            style={styles.searchBox}
+            type="text" 
+            placeholder="Search..." 
+            value={contactSearch}
+            onChange={(e) => dispatch({type: reducerCases.SET_CONTACT_SEARCH, contactSearch: e.target.value})}
+        />
     </div>
     <div style = {styles.rightConatiner}>
         <RiFilterLine
@@ -36,14 +40,23 @@ function ChatListHeader() {
 }
 
 const styles = {
+    searchBox:{
+        padding: "0.48rem",
+        paddingLeft: "0.91rem",
+        paddingRight: "0.91rem",
+        borderRadius: "0.5rem",
+        // border: "2px solid black",
+    },
     outermostContainer:{
         // paddingTop:"0.3rem",
         // paddingBottom:"0.3rem",
         display: "grid",
         gridTemplateColumns: "1fr 3.4fr 1fr",
         // border: "1px solid black"
+        marginTop: "0.3rem",
+        marginBottom: "0.4rem",
         backgroundColor: "#f5f5f5",
-        height:"3.5rem",
+        height:"3rem",
         alignItems: "center",
         justifyContent: "center",
     },
@@ -55,9 +68,9 @@ const styles = {
     }, 
     middleContainer:{
         height:"80%",
-        backgroundColor: "black",
+        // backgroundColor: "#4CAF50",
         color:"white",
-        borderRadius: "1rem",
+        borderRadius: "0.7rem",
         display: "flex",
         flexDirection:"row",
         gap:"1rem",

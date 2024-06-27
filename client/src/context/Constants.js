@@ -7,6 +7,10 @@
         SET_SOCKET: "SET_SOCKET", 
         ADD_MESSAGE: "ADD_MESSAGE", 
         SET_MESSAGE_SEARCH: "SET_MESSAGE_SEARCH",
+        SET_USER_CONTACTS: "SET_USER_CONTACTS",
+        SET_ONLINE_USERS: "SET_ONLINE_USERS",
+        SET_CONTACT_SEARCH: "SET_CONTACT_SEARCH",
+        
     };
 
     //These properties are typically used as action types in a Redux or context API reducer

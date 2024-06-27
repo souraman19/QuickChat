@@ -8,6 +8,9 @@ export const initialState = {
     messages: [],
     socket: undefined,
     messagesSearch: false, 
+    userContacts: [],
+    onlineUsers: [],
+    filteredContacts: [],
 };
 
 const reducer = (state, action) => { //Reducer function to manage state changes.
@@ -52,6 +55,26 @@ const reducer = (state, action) => { //Reducer function to manage state changes.
                 ...state,
                 messagesSearch: !state.messagesSearch,
             }
+        case reducerCases.SET_USER_CONTACTS:
+            return {
+                ...state,
+                userContacts: action.userContacts,
+            }
+        case reducerCases.SET_ONLINE_USERS: 
+            return {
+                ...state,
+                onlineUsers: action.onlineUsers,
+            }
+        case reducerCases.SET_CONTACT_SEARCH: {
+            const filteredContacts = state.userContacts.filter((contact) => 
+                contact.name.toLowerCase().includes(action.contactSearch.toLowerCase())
+            )
+            return {
+                ...state,
+                contactSearch: action.contactSearch,
+                filteredContacts,
+            }
+        }
         default: 
         return state; //Return the current state if no action type matches.
     }

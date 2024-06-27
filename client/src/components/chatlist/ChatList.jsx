@@ -20,7 +20,7 @@ function ChatList() {
     {currentPageType === "default" && (
       <div>
         <ChatListHeader />
-        {/* <List /> */}
+        <List />
       </div>
     )}
     {currentPageType === "show-all-contacts" && (

@@ -137,3 +137,109 @@ export const addAudioMessage = async(req, res, next) => {
         next(err);
     }
 }
+
+
+export const getInitialContactsWithMessages = async (req, res, next) => {
+    try {
+        const userId = parseInt(req.params.fromUser);
+        const prisma = getPrismaInstance();
+        const user = await prisma.user.findUnique({
+            where: {
+                id: userId,
+            },
+            include: {
+                sentMessages: {
+                    include: {
+                        sender: true,
+                        receiver: true,
+                    },
+                    orderBy: {
+                        createdAt: "desc",
+                    }
+                },
+                receivedMessages: {
+                    include: {
+                        sender: true,
+                        receiver: true,
+                    },
+                    orderBy: {
+                        createdAt: "desc",
+                    },
+                },
+            },  
+        });
+
+        const messages = [...user.sentMessages, ...user.receivedMessages];
+        messages.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+
+        const users = new Map();
+        const messageStatusChange = [];
+
+        messages.forEach((msg) => {
+            const isSender = msg.senderId === userId;
+            const calculatedId = isSender ? msg.receiverId : msg.senderId;
+
+            if (msg.messageStatus === "sent") {
+                messageStatusChange.push(msg.id);
+            }
+
+            const { id, type, message, messageStatus, createdAt, senderId, receiverId } = msg;
+
+            if (!users.has(calculatedId)) {
+                let user = {
+                    messageId: id, 
+                    type, 
+                    message, 
+                    messageStatus,
+                    createdAt,
+                    senderId,
+                    receiverId,
+                    totalUnreadMessages: 0, // Initialize totalUnreadMessages
+                };
+
+                if (!isSender && messageStatus !== "read") {
+                    user.totalUnreadMessages = 1; // Increment for unread messages
+                }
+
+                if (isSender) {
+                    user = {
+                        ...user,
+                        ...msg.receiver,
+                    };
+                } else {
+                    user = {
+                        ...user,
+                        ...msg.sender,
+                    };
+                }
+
+                users.set(calculatedId, { ...user });
+            } else if (!isSender && messageStatus !== "read") {
+                const user = users.get(calculatedId);
+                users.set(calculatedId, {
+                    ...user,
+                    totalUnreadMessages: user.totalUnreadMessages + 1, // Increment unread messages count
+                });
+            }
+        });
+
+        if (messageStatusChange.length > 0) {
+            await prisma.messages.updateMany({
+                where: {
+                    id: { in: messageStatusChange },
+                },
+                data: {
+                    messageStatus: "delivered",
+                },
+            });
+        }
+
+        return res.status(200).json({
+            users: Array.from(users.values()),
+            onlineUsers: Array.from(onlineUsers.keys()), // Assuming onlineUsers is defined somewhere
+        });
+
+    } catch (error) {
+        next(error);
+    }
+}
