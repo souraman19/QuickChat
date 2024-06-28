@@ -1,5 +1,5 @@
 import React from "react";
-import { FaArchive } from "react-icons/fa";
+import { FaArchive, FaPhone } from "react-icons/fa";
 import { IoMdSearch, IoMdBookmark, IoMdSettings } from "react-icons/io";
 import { AiOutlineHome } from "react-icons/ai";
 import Avatar from "../common/Avatar";
@@ -9,7 +9,7 @@ function LeftMenuBar() {
     <div style={styles.outermostContainer}>
       <div style={styles.upperContainer}>
         <AiOutlineHome style={styles.IoIcon} />
-        <IoMdSearch style={styles.IoIcon} />
+        <FaPhone style={styles.FaIcon} />
         <IoMdBookmark style={styles.IoIcon} />
         <IoMdSettings style={styles.IoIcon} />
         <FaArchive style={styles.FaIcon} />
@@ -35,7 +35,7 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "1rem",
+    gap: "1.5rem",
   },
   lowerContainer:{
     display: "flex",
@@ -45,9 +45,13 @@ const styles = {
   IoIcon: {
     color: "white",
     fontSize: "1.5rem",
+    cursor: "pointer",
+
   },
   FaIcon: {
     color: "white",
     fontSize: "1.2rem",
+    cursor: "pointer",
+    
   },
 };

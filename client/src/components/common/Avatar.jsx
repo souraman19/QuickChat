@@ -88,6 +88,31 @@ function Avatar({image , changeOption, setImage, type, isContextVisible, setIsCo
           )}
         </div>
       } 
+      {
+        type === "lg" && 
+        <div
+          onMouseEnter={() => setHover(true)}
+          onMouseLeave={() => setHover(false)}
+          className="relative cursor-pointer z-0"
+          
+          // style={{background: "grey"}}
+        >
+          <div style={{height:"18rem", width:"18rem", border: "2px solid red", borderRadius:"50%", overflow:"hidden"}}>
+            <img src={image}  alt="avatar" className="" style={{  borderRadius:"50%", height:"100%", width:"100%", objectFit:"cover"}}/>
+          </div>
+          {changeOption && (
+            <div style={{display: "flex", justifyContent:"center" }}>
+            <button 
+              style={{cursor: "pointer"}}
+              onClick={() => setIsContextVisible(true)}
+            >
+              <FaCamera />
+              <span> Change </span>
+            </button>
+          </div>
+          )}
+        </div>
+      } 
 
 
       {

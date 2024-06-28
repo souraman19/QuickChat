@@ -14,10 +14,14 @@ import { useEffect, useState } from "react";
 import GapLeftOfChatList from "./GapLeftOfChatList";
 import { io } from "socket.io-client";
 import { useRef } from "react";
+import VideoCall from "./call/VideoCall";
+import VoiceCall from "./call/VoiceCall";
+import IncomingVideoCall from "./common/IncomingVideoCall";
+import IncomingCall from "./common/IncomingCall";
 
 function Main() { 
   const router = useRouter();
-  const [{userInfo, currentChatUser, messagesSearch}, dispatch] = useStateProvider();
+  const [{userInfo, currentChatUser, messagesSearch, videoCall, voiceCall, incomingVideoCall, incomingVoiceCall}, dispatch] = useStateProvider();
   const [redirectLogin, setRedirectLogin] = useState(false);
   const [socketEvent, setSocketEvent] = useState(false); // to prevent multiple event listeners on socket
   const socket = useRef();
@@ -132,6 +136,39 @@ function Main() {
           fromSelf: false,
         });
       })
+
+      socket.current.on("incoming-voice-call", ({from, roomId, callType}) => {
+        dispatch({
+          type: reducerCases.SET_INCOMING_VOICE_CALL,
+          incomingVoiceCall: {...from, roomId, callType}
+        });
+      })
+
+      socket.current.on("incoming-video-call", ({from, roomId, callType}) => {
+        dispatch({
+          type: reducerCases.SET_INCOMING_VIDEO_CALL,
+          incomingVideoCall: {...from, roomId, callType}
+        });
+      })
+
+      socket.current.on("voice-call-rejected", () => {
+        dispatch({
+          type: reducerCases.END_CALL, 
+        });
+      })
+
+      socket.current.on("video-call-rejected", () => {
+        dispatch({
+          type: reducerCases.END_CALL, 
+        });
+      })
+
+      socket.current.on("end-call", () => {
+        dispatch({
+          type: reducerCases.END_CALL,
+        });
+      });
+
       setSocketEvent(true); //to prevent multiple event listeners
     }
   }, [socket.current])
@@ -151,20 +188,89 @@ function Main() {
 
   }, [currentChatUser])
 
+  // useEffect(() => {
+  //   if (incomingVideoCall) {
+  //     alert("Incoming video call!");
+  //   } else {
+  //     alert("No incoming video call!");
+  //   }
+  // }, []);
 
 
-  return <div style={styles.outerContainer}>
+  return (<div style={styles.outermostContainer}>
+
+    {incomingVideoCall && (
+      <div style={styles.incomingVideoCallDiv}>
+        <IncomingVideoCall />
+      </div>
+    )}
+
+    {incomingVoiceCall && (
+      <div style={styles.incomingVoiceCallDiv}>
+         <IncomingCall />
+      </div>
+    )}
+    {/* <IncomingVideoCall /> */}
+
+
+    {videoCall && 
+      <div style={styles.videoCallDiv}>
+        <VideoCall />
+      </div>
+    }
+    {voiceCall && 
+      <div style={styles.voiceCallDiv}>
+        <VoiceCall />
+      </div>
+    }
+    {(!videoCall && !voiceCall) && <>
+      <div style={styles.outerContainer}>
     <LeftMenuBar />
     <GapLeftOfChatList />
     <ChatList />
     {currentChatUser ? <Chat /> : <Empty />}
     {/* <Empty />  */}
     {/* <Chat /> */}
-  </div>;
+  </div>
+    </>}
+  </div>);
 }
 
 
 const styles = {
+  incomingVideoCallDiv:{
+    position: "absolute",
+    bottom: "3rem",
+    right: "2rem",
+    // border: "2px solid red",
+    zIndex: "100",
+  },
+  incomingVoiceCallDiv:{
+    position: "absolute",
+    bottom: "3rem",
+    right: "2rem",
+    // border: "2px solid red",
+    zIndex: "100",
+  },
+  outermostContainer: {
+    height: "100vh",
+    width: "100vw",
+    // overflowY: "hidden",
+    // overflowX: "hidden",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  videoCallDiv:{
+    // height: "100vh",
+    // width: "100vw",
+    // overflow: "hidden",
+  },
+  voiceCallDiv:{
+    // height: "100vh",
+    // width: "100vw",
+    // overflow: "hidden",
+  },
   outerContainer:{
     display: "grid",
     gridTemplateColumns: "0.7fr 0.07fr 4.5fr 12fr",

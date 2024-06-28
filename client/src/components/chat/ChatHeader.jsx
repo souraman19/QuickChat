@@ -8,6 +8,30 @@ import { reducerCases } from "@/context/Constants";
 
 function ChatHeader() {
   const [{userInfo, currentChatUser}, dispatch] = useStateProvider();
+
+  const handleVoiceCall = () => {
+    dispatch({type: reducerCases.SET_VOICE_CALL, 
+      voiceCall:{
+        ...currentChatUser,
+        type: "out-going",
+        callType: "voice",
+        roomId: Date.now(),
+      }
+    })
+  }
+
+  const handleVideoCall = () => {
+    dispatch({type: reducerCases.SET_VIDEO_CALL, 
+      videoCall:{
+        ...currentChatUser,
+        type: "out-going",
+        callType: "video",
+        roomId: Date.now(),
+      }
+    })
+  }
+
+
   // console.log(userInfo);
   return (
     <div style={styles.outermostContainer}>
@@ -23,8 +47,14 @@ function ChatHeader() {
       </div>
 
       <div style={styles.rightContainer}>
-        <IoCall style={styles.IoIcon} />
-        <IoVideocam style={styles.IoIcon} />
+        <IoCall 
+          style={styles.IoIcon} 
+          onClick={handleVoiceCall}
+        />
+        <IoVideocam 
+          style={styles.IoIcon} 
+          onClick={handleVideoCall}
+        />
         <IoMdSearch style={{...styles.IoIcon, cursor: "pointer"} }
           onClick={() => dispatch({type: reducerCases.SET_MESSAGE_SEARCH})}
         />

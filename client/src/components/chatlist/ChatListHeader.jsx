@@ -1,7 +1,8 @@
 import React from "react";
 import { useStateProvider } from "@/context/Statecontext";
+import { IoImagesOutline } from 'react-icons/io5';
 import Avatar from "../common/Avatar";
-import { FaEnvelope } from 'react-icons/fa';
+import { FaEnvelope, FaImages } from 'react-icons/fa';
 import { RiFilterLine } from 'react-icons/ri';
 import { reducerCases } from "@/context/Constants";
 
@@ -18,7 +19,7 @@ function ChatListHeader() {
     <div style = {styles.leftContainer}>
         <FaEnvelope 
             title="New Chat"
-            style={{cursor:"pointer"}}
+            style={{cursor:"pointer", fontSize:"1.2rem"}}
             onClick={handleNewChatContactPage}
         />
     </div>
@@ -32,8 +33,9 @@ function ChatListHeader() {
         />
     </div>
     <div style = {styles.rightConatiner}>
-        <RiFilterLine
-            style={{cursor:"pointer"}}  
+        <FaImages
+            title="Gallery"
+            style={{cursor:"pointer", fontSize:"1.4rem"}}  
         />
     </div>
   </div>);

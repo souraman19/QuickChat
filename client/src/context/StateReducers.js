@@ -11,6 +11,11 @@ export const initialState = {
     userContacts: [],
     onlineUsers: [],
     filteredContacts: [],
+    videoCall: undefined,
+    voiceCall: undefined,
+    incomingVideoCall: undefined,
+    incomingVoiceCall: undefined,
+    callAccepted: false,
 };
 
 const reducer = (state, action) => { //Reducer function to manage state changes.
@@ -75,6 +80,39 @@ const reducer = (state, action) => { //Reducer function to manage state changes.
                 filteredContacts,
             }
         }
+        case reducerCases.SET_VIDEO_CALL:
+            return {
+                ...state,
+                videoCall: action.videoCall,
+            }
+        case reducerCases.SET_VOICE_CALL:
+            return {
+                ...state,
+                voiceCall: action.voiceCall,
+            }
+        case reducerCases.SET_INCOMING_VIDEO_CALL:
+            return {
+                ...state,
+                incomingVideoCall: action.incomingVideoCall,
+            }
+        case reducerCases.SET_INCOMING_VOICE_CALL:
+            return {
+                ...state,
+                incomingVoiceCall: action.incomingVoiceCall,
+            }
+        case reducerCases.END_CALL:
+            return {
+                ...state,
+                videoCall: undefined,
+                voiceCall: undefined,
+                incomingVideoCall: undefined,
+                incomingVoiceCall: undefined,
+            }
+        case reducerCases.SET_CALL_ACCEPTED:
+            return {
+                ...state,
+                callAccepted: action.callAccepted,
+            }
         default: 
         return state; //Return the current state if no action type matches.
     }
