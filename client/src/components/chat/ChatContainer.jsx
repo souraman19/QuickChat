@@ -79,6 +79,7 @@ function ChatContainer() {
               {message.type === "text" && (
                 <div style={dynamicStyles(message, userInfo).messageBubble}>
                   <div style={styles.messageText}>
+
                     {messagesSearch &&
                     searchedMessages.length > 0 &&
                     message.id === searchedMessages[searchedMessageIndex].id
@@ -91,6 +92,7 @@ function ChatContainer() {
                       {message.senderId === userInfo.id && (
                         <MessageStatus messageStatus={message.messageStatus} />
                       )}
+                      
                     </div>
                   </div>
                 </div>

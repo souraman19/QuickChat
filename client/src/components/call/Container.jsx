@@ -1,13 +1,13 @@
-import React, { use, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { useStateProvider } from "@/context/Statecontext";
-import { useState } from "react";
 import Avatar from "@/components/common/Avatar";
 import { MdOutlineCallEnd } from "react-icons/md";
 import { reducerCases } from "@/context/Constants";
 import { GET_CALL_TOKEN } from "@/utils/ApiRoutes";
 
 function Container({ data }) {
-  const [{ userInfo, socket, callAccepted }, dispatch] = useStateProvider();
+  const [{ userInfo, socket }, dispatch] = useStateProvider();
   const [theCallAccepted, setTheCallAccepted] = useState(false);
   const [token, setToken] = useState(undefined);
   const [zgVar, setZgVar] = useState(undefined);
@@ -16,9 +16,13 @@ function Container({ data }) {
 
   useEffect(() => {
     if (data.type === "out-going") {
-      socket.current.on("accept-call", () => setTheCallAccepted(true));
+      socket.current.on("accept-call", () => {
+        console.log("Call accepted");
+        setTheCallAccepted(true);
+      });
     } else {
       setTimeout(() => {
+        console.log("Incoming call accepted automatically");
         setTheCallAccepted(true);
       }, 1000);
     }
@@ -30,12 +34,15 @@ function Container({ data }) {
         const {
           data: { token: returnedToken },
         } = await axios.get(`${GET_CALL_TOKEN}/${userInfo.id}`);
+        console.log("Token received:", returnedToken);
         setToken(returnedToken);
       } catch (err) {
-        console.log(err);
+        console.error("Error fetching token:", err);
       }
     };
-    getToken();
+    if (theCallAccepted) {
+      getToken();
+    }
   }, [theCallAccepted]);
 
   useEffect(() => {
@@ -46,10 +53,13 @@ function Container({ data }) {
             process.env.NEXT_PUBLIC_ZEGO_APP_ID,
             process.env.NEXT_PUBLIC_ZEGO_SERVER_ID
           );
+          console.log("ZegoExpressEngine initialized");
           setZgVar(zg);
+
           zg.on(
             "roomStreamUpdate",
             async (roomId, updateType, streamList, extendedData) => {
+              console.log("Room stream update:", { roomId, updateType, streamList, extendedData });
               if (updateType === "ADD") {
                 const rmVideo = document.getElementById("remote-video");
                 const vd = document.createElement(
@@ -62,10 +72,11 @@ function Container({ data }) {
                 if (rmVideo) {
                   rmVideo.appendChild(vd);
                 }
-                zg.startPlayingStream(streamList[0].streamID, {
+                const stream = await zg.startPlayingStream(streamList[0].streamID, {
                   audio: true,
                   video: true,
-                }).then((stream) => (vd.srcObject = stream));
+                });
+                vd.srcObject = stream;
               } else if (
                 updateType === "DELETE" &&
                 zg &&
@@ -79,12 +90,15 @@ function Container({ data }) {
               }
             }
           );
+
           await zg.loginRoom(
             data.roomId.toString(),
             token,
             { userID: userInfo.id.toString(), userName: userInfo.name },
-            { userUpdatw: true }
+            { userUpdate: true }
           );
+          console.log("Logged into room:", data.roomId.toString());
+
           const localStream = await zg.createStream({
             camera: {
               audio: true,
@@ -99,34 +113,42 @@ function Container({ data }) {
           videoElement.className = "h-28 w-32";
           videoElement.autoplay = true;
           videoElement.muted = false;
-
           videoElement.playsInline = true;
 
           localVideo.appendChild(videoElement);
           const td = document.getElementById("video-local-zego");
           td.srcObject = localStream;
+
           const streamID = "123" + Date.now();
           setPublishStream(streamID);
           setLocalStream(localStream);
           zg.startPublishingStream(streamID, localStream);
+          console.log("Started publishing stream:", streamID);
+
+          // Debug and Validate MediaStreamTrack
+          const track = localStream.getTracks()[0]; // Get the first track
+          if (track instanceof MediaStreamTrack) {
+            console.log("Valid MediaStreamTrack:", track);
+          } else {
+            console.error("Invalid MediaStreamTrack:", track);
+          }
         }
       );
     };
-    if(token){
+    if (token) {
       startCall();
     }
   }, [token]);
 
   const endCall = () => {
     const id = data.id;
-    if(zgVar && localStream && publishStream){
+    if (zgVar && localStream && publishStream) {
       zgVar.destroyStream(localStream);
       zgVar.stopPublishingStream(publishStream);
       zgVar.logoutRoom(data.roomId.toString());
     }
     if (data.callType === "voice") {
       socket.current.emit("reject-voice-call", { from: id });
-
     } else {
       socket.current.emit("reject-video-call", { from: id });
     }
@@ -135,11 +157,8 @@ function Container({ data }) {
       type: reducerCases.SET_CALL_ACCEPTED,
       callAccepted: false,
     });
+    console.log("Call ended");
   };
-
-  useState(() => {
-    console.log(callAccepted);
-  }, []);
 
   return (
     <div style={styles.container}>
@@ -150,7 +169,6 @@ function Container({ data }) {
           : "Calling..."}
       </div>
 
-      {/* {console.log(callAccepted)} */}
       {(!theCallAccepted || data.callType === "voice") && (
         <div style={styles.avatar}>
           <Avatar
@@ -184,23 +202,31 @@ const styles = {
     maxWidth: "300px",
     height: "350px",
     margin: "auto",
-    backgroundColor: "#f0f0f0",
+    marginTop: "10%",
+    backgroundColor: "#f5f5f5",
+    boxShadow: "0px 0px 10px rgba(0,0,0,0.1)",
   },
   name: {
-    fontSize: "1.2rem",
+    fontSize: "20px",
     fontWeight: "bold",
     marginBottom: "10px",
   },
   status: {
-    marginBottom: "15px",
+    fontSize: "16px",
+    marginBottom: "10px",
   },
   avatar: {
-    marginBottom: "15px",
+    width: "100px",
+    height: "100px",
+    borderRadius: "50%",
+    overflow: "hidden",
+    marginBottom: "10px",
   },
   endCallButton: {
-    cursor: "pointer",
+    fontSize: "30px",
     color: "red",
-    fontSize: "1.5rem",
+    cursor: "pointer",
+    marginTop: "20px",
   },
 };
 

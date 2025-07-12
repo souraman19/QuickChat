@@ -153,8 +153,8 @@ function MessageBar() {
         message: data.message,
       });
       dispatch({
-        type: reducerCases.ADD_MESSAGE,
-        newMessage: {
+        type: reducerCases.ADD_MESSAGE, //This will dispatch an action to add the message to the context.
+        newMessage: { //The newMessage object contains the message data from the server.
           ...data.message,
         },
         fromSelf: true,

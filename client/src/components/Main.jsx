@@ -22,9 +22,9 @@ import IncomingCall from "./common/IncomingCall";
 function Main() { 
   const router = useRouter();
   const [{userInfo, currentChatUser, messagesSearch, videoCall, voiceCall, incomingVideoCall, incomingVoiceCall}, dispatch] = useStateProvider();
-  const [redirectLogin, setRedirectLogin] = useState(false);
+  const [redirectLogin, setRedirectLogin] = useState(false); // to redirect to login page if user is not logged in
   const [socketEvent, setSocketEvent] = useState(false); // to prevent multiple event listeners on socket
-  const socket = useRef();
+  const socket = useRef(); //socket reference //
 
   useEffect(() => {
     if(redirectLogin) router.push("/login"); 
@@ -119,21 +119,21 @@ function Main() {
   useEffect(() => { 
     if(userInfo) { 
       socket.current = io(HOST); //connect to the socket
-      socket.current.emit("add-user", userInfo.id); 
-      dispatch({type: reducerCases.SET_SOCKET, socket}); 
+      socket.current.emit("add-user", userInfo.id);  //add user to the socket
+      dispatch({type: reducerCases.SET_SOCKET, socket}); //set the socket in the context 
     }
   }, [userInfo]); 
 
 
   useEffect(() => {
-    if(socket.current && !socketEvent){ 
-      socket.current.on("msg-receive", (data) => {
-        dispatch({
-          type: reducerCases.ADD_MESSAGE, 
-          newMessage:{
-            ...data.message
+    if(socket.current && !socketEvent){  
+      socket.current.on("msg-receive", (data) => { //listen for incoming messages from the server
+        dispatch({ //dispatch an action to add the message to the context
+          type: reducerCases.ADD_MESSAGE,  //action type
+          newMessage:{ 
+            ...data.message //message data from the server
           },
-          fromSelf: false,
+          fromSelf: false, //message is not sent by the user currently logged in
         });
       })
 

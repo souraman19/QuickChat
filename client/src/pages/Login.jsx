@@ -1,154 +1,201 @@
-import React from 'react';
-import { firebaseAuth } from '@/utils/FirebaseConfig'; 
-import { GoogleAuthProvider } from 'firebase/auth'; 
-import { signInWithPopup } from 'firebase/auth'; //firebase method to sign in with popup
-import { FaGoogle, FaMicrosoft, FaPhone } from 'react-icons/fa';
-import { CHECK_USER_ROUTE } from '@/utils/ApiRoutes';
-import axios from 'axios'; //axios for making http requests to the server
-import { useRouter } from 'next/router'; //Hook from Next.js for navigating between pages.
-import { useStateProvider } from '@/context/Statecontext'; //Custom hook for accessing the global state
-import { reducerCases } from '@/context/Constants'; 
-import { useEffect } from 'react'; 
+import React, { useEffect } from "react";
+import { firebaseAuth } from "@/utils/FirebaseConfig";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { FaGoogle, FaMicrosoft } from "react-icons/fa";
+import { CHECK_USER_ROUTE } from "@/utils/ApiRoutes";
+import axios from "axios";
+import { useRouter } from "next/router";
+import { useStateProvider } from "@/context/Statecontext";
+import { reducerCases } from "@/context/Constants";
 
 function Login() {
-    const router = useRouter();
-
-    const [{userInfo, newUser}, dispatch] = useStateProvider(); // ?? => 
-
-
-    useEffect(() => {
-      if(userInfo?.id && !newUser) router.push("/"); //not working right now as when we explicitely going to /login then newuser value is not saved and changed to intial as false
-    }, [userInfo, newUser]);
+  const router = useRouter();
+  const [{ userInfo, newUser }, dispatch] = useStateProvider();
 
 
-    const handleLogin = async () => {
-        const provider = new GoogleAuthProvider(); 
-        const {user:{ 
-            displayName: name,
-            email,
-            photoURL: profilePic,
-        }} = await signInWithPopup(firebaseAuth, provider); //signInWithPopup: Method that opens a popup for Google sign-in. It returns a user object which is destructured to get displayName, email, and photoURL.
-        // console.log(user);
-        try{
-            if(email){
-                const {data} = await axios.post(CHECK_USER_ROUTE, {email}); 
-                // console.log(data);
-                if(!data.status){ //If the user is not found in the database, set newUser to true and navigate to the onboarding page.
 
-                  //dispatch: Sends actions to the reducer to update the global state
-                    dispatch({ //Dispatch an action to set the newUser state to true.
-                        type: reducerCases.SET_NEW_USER, 
-                        newUser: true
-                    })
-                    dispatch({
-                        type: reducerCases.SET_USER_INFO, // Action to set user information in the state.
-                        userInfo:{ 
-                            name, 
-                            email,
-                            profilePic,
-                            status:"",
-                        }
-                    })
-                    router.push("/onboarding"); //Navigate to the onboarding page.
-                } else {
-                  const {id, name, email, profilePic: profilePic, status} = data.data;
-                  // console.log(data.data);
-                  dispatch({
-                    type: reducerCases.SET_USER_INFO,
-                    userInfo:{id, name, email, profilePic, status}
-                  })
-                  router.push("/"); //Navigate to the home page.
-                }
-            }
-        }catch(err){
-            console.log(err);
+  //not working currently
+  useEffect(() => {
+    if (userInfo?.id && !newUser) router.push("/");
+  }, [userInfo, newUser]);
+
+
+
+// ✅ You’re using Firebase Auth
+// 👉 with GoogleAuthProvider,
+// ✔️ which is built on top of Google OAuth
+
+  const handleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    const {
+      user: { displayName: name, email, photoURL: profilePic },
+    } = await signInWithPopup(firebaseAuth, provider);
+
+    try {
+      if (email) {
+        const { data } = await axios.post(CHECK_USER_ROUTE, { email });
+
+        if (!data.status) {
+          dispatch({ type: reducerCases.SET_NEW_USER, newUser: true });
+          dispatch({
+            type: reducerCases.SET_USER_INFO,
+            userInfo: { name, email, profilePic, status: "" },
+          });
+          router.push("/onboarding");
+        } else {
+          const { id, name, email, profilePic, status } = data.data;
+          dispatch({
+            type: reducerCases.SET_USER_INFO,
+            userInfo: { id, name, email, profilePic, status },
+          });
+          router.push("/");
         }
+      }
+    } catch (err) {
+      console.log(err);
     }
+  };
 
-
-
-    
   return (
-    <div style={styles.loginContainer}>
+    <div style={styles.page}>
+      <div className="stars" />
+      <div style={styles.card}>
+        <div className="heading">QuickChat</div>
 
-      <div style={styles.animationWrapper}>
-        <div className="animation">QuickChat</div>
+        <div style={styles.buttonGroup}>
+          <button style={styles.google} onClick={handleLogin}>
+            <FaGoogle style={styles.icon} />
+            Login with Google
+          </button>
+          <button style={styles.microsoft}>
+            <FaMicrosoft style={styles.icon} />
+            Login with Microsoft
+          </button>
+        </div>
       </div>
 
-      <div style={styles.buttonContainer}>
-        <button style={styles.button} onClick={handleLogin}>
-          <FaGoogle style={styles.icon} />
-          Login with Google
-        </button>
-        <button style={styles.button}>
-          <FaMicrosoft style={styles.icon} />
-          Login with Microsoft
-        </button>
-      </div>
+      <style jsx global>{`
+        .heading {
+          font-size: 64px;
+          font-weight: 800;
+          background: linear-gradient(90deg, #6dd5ed, #2193b0, #6dd5ed);
+          background-size: 300% 300%;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          animation: textflow 5s ease infinite;
+          text-align: center;
+        }
 
-      <style>{keyframes}</style> 
-      {/* //Inject the keyframes into the component */}
-      {/* //embedding CSS keyframes animation directly into the JSX code */}
+        @keyframes textflow {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
 
+        button:hover {
+          transform: scale(1.07);
+          box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+        }
+
+        .stars {
+          position: absolute;
+          width: 200%;
+          height: 200%;
+          background: transparent
+            url("https://raw.githubusercontent.com/CodeExplainedRepo/star-animation/master/stars.png")
+            repeat top center;
+          animation: moveStars 90s linear infinite;
+          opacity: 0.1;
+          z-index: 0;
+        }
+
+        @keyframes moveStars {
+          from {
+            transform: translateY(0);
+          }
+          to {
+            transform: translateY(-100%);
+          }
+        }
+      `}</style>
     </div>
   );
 }
 
 const styles = {
-  loginContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh',
-    background: 'linear-gradient(to bottom right, #c9d6ff, #e2e2e2)',
-    fontFamily: 'Arial, Helvetica, sans-serif',
+  page: {
+    height: "100vh",
+    width: "100vw",
+    background: "#0e0e10",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
+    overflow: "hidden",
+    fontFamily: "Segoe UI, sans-serif",
+    color: "#fff",
   },
-  animationWrapper: {
-    marginBottom: '50px',
+  card: {
+    background: "rgba(255, 255, 255, 0.05)",
+    borderRadius: "24px",
+    padding: "60px 50px",
+    boxShadow: "0 0 30px rgba(0, 0, 0, 0.8)",
+    backdropFilter: "blur(16px)",
+    WebkitBackdropFilter: "blur(16px)",
+    border: "1px solid rgba(255, 255, 255, 0.08)",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    zIndex: 1,
+    minWidth: "360px",
   },
-  buttonContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+  buttonGroup: {
+    marginTop: "50px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
+    width: "100%",
   },
-  button: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: '18px',
-    fontWeight: 'medium',
-    padding: '15px 30px',
-    margin: '10px',
-    width: '350px', // Set a fixed width for both buttons
-    color: '#fff',
-    backgroundColor: '#4CAF50',
-    border: 'none',
-    borderRadius: '8px',
-    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
-    cursor: 'pointer',
-    transition: 'background-color 0.3s, transform 0.2s',
+  google: {
+    background: "linear-gradient(to right, #1cb5e0, #000851)",
+    color: "#fff",
+    fontWeight: 600,
+    fontSize: "1rem",
+    padding: "14px 24px",
+    border: "none",
+    borderRadius: "999px",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    boxShadow: "0 0 20px #1cb5e088",
+    transition: "transform 0.3s ease, box-shadow 0.3s ease",
+  },
+  microsoft: {
+    background: "linear-gradient(to right, #8e2de2, #4a00e0)",
+    color: "#fff",
+    fontWeight: 600,
+    fontSize: "1rem",
+    padding: "14px 24px",
+    border: "none",
+    borderRadius: "999px",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    boxShadow: "0 0 20px #8e2de277",
+    transition: "transform 0.3s ease, box-shadow 0.3s ease",
   },
   icon: {
-    marginRight: '10px',
+    marginRight: "12px",
+    fontSize: "20px",
   },
 };
-
-const keyframes = `
-  @keyframes fadeIn {
-    0% { opacity: 0; }
-    50% { opacity: 1; }
-    100% { opacity: 0; }
-  }
-
-  .animation {
-    font-size: 74px;
-    font-weight: bold;
-    animation: fadeIn 2s ease-in-out infinite;
-    background: linear-gradient(135deg, #ff758c, #ff7eb3);
-    -webkit-background-clip: text;
-    color: transparent;
-  }
-`;
 
 export default Login;

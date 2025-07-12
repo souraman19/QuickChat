@@ -17,6 +17,7 @@
     "axios": "^1.4.0",
     "emoji-picker-react": "^4.4.9",
     "firebase": "^9.21.0",
+    "framer-motion": "^12.23.3",
     "next": "13.4.1",
     "postcss": "^8.4.23",
     "react": "18.2.0",

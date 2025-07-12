@@ -2,7 +2,7 @@ import React from "react"
 
 function logout() {
     return (<div>
-        logout
+        logoutl
     </div>);
 }
 
