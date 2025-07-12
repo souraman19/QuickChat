@@ -5,8 +5,7 @@ const GapLeftOfChatList = () => {
         <div style={{
             height:"100%", 
             width:"100%", 
-            backgroundImage:"url('./chat_back.webp')",
-            backgroundSize:"cover",
+            backgroundColor: "#0e0e10",
             // opacity: "0.7",
             }}>
             

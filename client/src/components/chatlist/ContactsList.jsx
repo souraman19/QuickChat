@@ -77,7 +77,6 @@ function ContactsList() {
               {/* <span>{initialLetter}</span> */}
               {userList.map((contact) => {
                 return <ChatListItem 
-                  style = {styles.ChatListItemStyle}
                   data = {contact}
                   key = {contact.id}
                   isContact = {true}
@@ -92,48 +91,65 @@ function ContactsList() {
 }
 
 const styles = {
-  SingleLetterContactList:{
-    
-  },
-  ChatListItemStyle:{
-
+  SingleLetterContactList: {
+    marginTop: "0.5rem",
+    paddingLeft: "0.75rem",
+    paddingRight: "0.75rem",
   },
   outermostDiv: {
     marginTop: "0rem",
     marginBottom: "1rem",
+    color: "#fff",
+    backgroundColor: "#0e0e10",
+    height: "100%",
   },
-  headOfContactList:{
+  headOfContactList: {
     paddingTop: "1rem",
-    borderBottom:"1px solid #ccc",
-    height:"4.5rem",
-    backgroundColor:"#f9f5f5",
+    borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+    height: "4.5rem",
+    backgroundColor: "rgba(255, 255, 255, 0.04)",
+    backdropFilter: "blur(8px)",
+    WebkitBackdropFilter: "blur(8px)",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
   },
   backArrowStyle: {
     fontSize: "1.4rem",
-    marginRight: "4.5rem",
-    cursor:"pointer",
-
+    marginRight: "1rem",
+    cursor: "pointer",
+    color: "#ccc",
   },
   arrowContainer: {
     marginLeft: "1rem",
     display: "flex",
     alignItems: "center",
+    color: "#eee",
+    fontWeight: 600,
+    fontSize: "1rem",
   },
   searchDiv: {
-    width:"100%",
+    width: "100%",
     display: "flex",
     alignItems: "center",
-    // justifyContent: "center",
     marginTop: "0.5rem",
+    paddingLeft: "0.75rem",
+    paddingRight: "0.75rem",
   },
-  iomdsearch:{
-    fontSize:"1.5rem",
-    marginLeft:"0.5rem",
-    marginRight:"0.5rem"
+  iomdsearch: {
+    fontSize: "1.5rem",
+    color: "#aaa",
+    marginRight: "0.5rem",
   },
-  inputArea:{
-    width:"75%",
-    padding:"0.25rem",
+  inputArea: {
+    width: "100%",
+    padding: "0.5rem 1rem",
+    borderRadius: "8px",
+    border: "1px solid rgba(255,255,255,0.08)",
+    backgroundColor: "rgba(255,255,255,0.05)",
+    color: "#fff",
+    outline: "none",
   },
 };
+
 export default ContactsList;

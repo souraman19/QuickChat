@@ -276,7 +276,8 @@ const styles = {
     gridTemplateColumns: "0.7fr 0.07fr 4.5fr 12fr",
     overflow: "hidden",
     height:"100vh",
-    width: "100vw"
+    width: "100vw",
+    backgroundColor: "#0e0e10",
   }
 }
 

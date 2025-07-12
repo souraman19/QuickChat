@@ -16,7 +16,7 @@ function ChatList() {
   }, [contactsPage])
   
 
-  return <div style={{backgroundColor:"#f9f5f5", borderLeft:"2px black grey", borderRight:"1.5px solid black"}}>
+  return <div style={{backgroundColor:"", borderLeft:"2px black grey", borderRight:"1.5px solid black"}}>
     {currentPageType === "default" && (
       <div>
         <ChatListHeader />

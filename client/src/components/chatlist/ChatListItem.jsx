@@ -6,6 +6,7 @@ import { useStateProvider } from "@/context/Statecontext";
 import MessageStatus from "../common/MessageStatus";
 import { FaCamera, FaMicrophone } from "react-icons/fa";
 import { calculateTime } from "@/utils/CalculateTime";
+import { color } from "framer-motion";
 
 function ChatListItem({ data, isContact = false }) {
   const [{ userInfo, currentChatUser }, dispatch] = useStateProvider();
@@ -25,7 +26,7 @@ function ChatListItem({ data, isContact = false }) {
     <div
       style={{
         ...styles.outermostDiv,
-        backgroundColor: hover ? "#f0f0f6" : "white",
+        backgroundColor: hover ? "#0e0e30" : "#0e0e10",
       }}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
@@ -76,7 +77,7 @@ const dynamicStyles = (data) => ({
 });
 const styles = {
   outermostDiv: {
-    // border:"1px solid black",
+    border:"1px solid black",
     display: "flex",
     flexDirection: "row",
     paddingTop: "0.7rem",

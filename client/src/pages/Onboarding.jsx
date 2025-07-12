@@ -15,6 +15,14 @@ function Onboarding() {
   const [isContextVisible, setIsContextVisible] = useState(false);
   const router = useRouter();
 
+
+  
+  useEffect(() => {
+    if (!newUser && !userInfo?.email) router.push("/login");
+    if (!newUser && userInfo?.email) router.push("/");
+  }, [newUser, userInfo, router]);
+
+
   const valiDateName = () => {
     if (name.length < 3) {
       alert("Name must be at least 3 characters long");
