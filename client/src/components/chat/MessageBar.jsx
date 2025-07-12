@@ -229,52 +229,66 @@ const styles = {
   outermostContainer: {
     height: "100%",
     width: "100%",
-    backgroundColor: "#f9f5f5",
+    background: "rgba(15, 15, 25, 0.85)", // darker tone
+    backdropFilter: "blur(8px)",
+    borderTop: "1px solid rgba(255, 255, 255, 0.07)",
     display: "flex",
     alignItems: "center",
+    padding: "0.6rem 1.2rem",
+    gap: "0.8rem",
+    boxShadow: "0 -2px 12px rgba(0, 0, 0, 0.4)",
   },
   emojistyle: {
-    flex: "0.8",
-    // border:"2px solid red",
+    flex: "0.5",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   },
   textboxdiv: {
-    flex: "10",
-    // border:"2px solid red",
+    flex: "8",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    marginRight: "0.4rem",
   },
   textholdstyle: {
-    // height:"90%",  // Increase the height to 100%
     width: "100%",
-    border: "1px solid #ccc", // Optional: add a border for visibility
-    padding: "0.3rem",
+    border: "1px solid rgba(180, 180, 255, 0.1)",
+    backgroundColor: "rgba(255, 255, 255, 0.06)",
+    borderRadius: "16px",
+    padding: "0.65rem 1rem",
+    color: "#e0e0f0",
     fontSize: "1rem",
+    outline: "none",
+    backdropFilter: "blur(12px)",
+    boxShadow: "inset 0 0 4px rgba(255, 255, 255, 0.05)",
   },
   iconbox: {
-    flex: "1.8",
-    // border:"2px solid red",
+    flex: "2",
     display: "flex",
-    gap: "0.8rem",
+    gap: "1rem",
     alignItems: "center",
     justifyContent: "center",
   },
   iconStyle: {
-    fontSize: "1.8rem",
+    fontSize: "1.7rem",
     cursor: "pointer",
+    color: "#b2a1ff", // Neon purple tone
+    transition: "transform 0.2s ease, color 0.3s ease",
   },
   WalleticonStyle: {
-    fontSize: "1.5rem",
+    fontSize: "1.4rem",
+    color: "#ffb74d", // Warm neon amber
+    cursor: "pointer",
+    transition: "transform 0.2s ease",
   },
-  audioRecordBoxSyle:{
-    position:"absolute",
-    top:"23rem",
-    right:"35rem",
-  }
+  audioRecordBoxSyle: {
+    position: "absolute",
+    bottom: "5rem",
+    left: "50%",
+    transform: "translateX(-50%)",
+    zIndex: 999,
+  },
 };
+
 
 export default MessageBar;
