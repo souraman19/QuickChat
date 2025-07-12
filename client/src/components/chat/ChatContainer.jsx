@@ -1,10 +1,11 @@
-import React, { useRef, useEffect, useState, use } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useStateProvider } from "@/context/Statecontext";
 import { calculateTime } from "@/utils/CalculateTime";
 import MessageStatus from "../common/MessageStatus";
 import ImageMessage from "./ImageMessage";
 import dynamic from "next/dynamic";
 import SearchMessages from "./SearchMessages";
+
 const VoiceMessage = dynamic(() => import("./VoiceMessage"), { ssr: false });
 
 function ChatContainer() {
@@ -12,13 +13,7 @@ function ChatContainer() {
   const [searchText, setSearchText] = useState("");
   const [searchedMessages, setSearchedMessages] = useState([]);
   const [searchedMessageIndex, setSearchedMessageIndex] = useState(0);
-
   const messageRefs = useRef([]);
-    searchedMessages.forEach((mymessage) => {
-      console.log("len", searchedMessages.length);
-      console.log(mymessage.index);
-      console.log(mymessage);
-    })
 
   const highlightText = (text, searchText) => {
     if (!searchText) return text;
@@ -27,7 +22,7 @@ function ChatContainer() {
       <>
         {parts.map((part, index) =>
           part.toLowerCase() === searchText.toLowerCase() ? (
-            <span key={index} style={{ backgroundColor: "yellow" }}>
+            <span key={index} style={{ backgroundColor: "#ffee58", color: "#000", fontWeight: 600 }}>
               {part}
             </span>
           ) : (
@@ -38,21 +33,19 @@ function ChatContainer() {
     );
   };
 
-
   useEffect(() => {
-    if(searchText !== "") {
+    if (searchText !== "") {
       setSearchedMessages(
         messages
-          .map((singlemessage, index) => ({
-            ...singlemessage,
-            index,
-          }))
+          .map((msg, index) => ({ ...msg, index }))
           .filter(
-            (singlemessage) =>
-              singlemessage.type === "text" &&
-              singlemessage.message.toLowerCase().includes(searchText.toLowerCase())
+            (msg) =>
+              msg.type === "text" &&
+              msg.message.toLowerCase().includes(searchText.toLowerCase())
           )
       );
+    } else {
+      setSearchedMessages([]);
     }
     setSearchedMessageIndex(0);
   }, [searchText, messages]);
@@ -69,7 +62,8 @@ function ChatContainer() {
   return (
     <>
       <div style={styles.outermostdiv}>
-        <div style={styles.allmessagesDiv}>
+        <div className="starry-background" />
+        <div style={styles.allmessagesDiv} className="custom-scrollbar">
           {messages.map((message, index) => (
             <div
               key={index}
@@ -79,21 +73,19 @@ function ChatContainer() {
               {message.type === "text" && (
                 <div style={dynamicStyles(message, userInfo).messageBubble}>
                   <div style={styles.messageText}>
-
                     {messagesSearch &&
                     searchedMessages.length > 0 &&
-                    message.id === searchedMessages[searchedMessageIndex].id
+                    message.id === searchedMessages[searchedMessageIndex]?.id
                       ? highlightText(message.message, searchText)
                       : message.message}
                   </div>
                   <div style={styles.timeWithStatus}>
                     <div style={styles.timeStyle}>{calculateTime(message.createdAt)}</div>
-                    <div style={styles.messageStatus}>
-                      {message.senderId === userInfo.id && (
+                    {message.senderId === userInfo.id && (
+                      <div style={styles.messageStatus}>
                         <MessageStatus messageStatus={message.messageStatus} />
-                      )}
-                      
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -102,10 +94,11 @@ function ChatContainer() {
             </div>
           ))}
         </div>
+
         {messagesSearch && (
           <div style={styles.searchMessageSlide}>
-            <SearchMessages 
-              messageRefs={messageRefs} 
+            <SearchMessages
+              messageRefs={messageRefs}
               searchedMessageIndex={searchedMessageIndex}
               setSearchedMessageIndex={setSearchedMessageIndex}
               searchedMessages={searchedMessages}
@@ -116,51 +109,83 @@ function ChatContainer() {
           </div>
         )}
       </div>
-      <style>
-        {`
-          .custom-scrollbar::-webkit-scrollbar {
-            width: 12px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-track {
-            background: #f0f0f0;
-            border-radius: 6px;
-          }
-          .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: #a0a0a0;
-            border-radius: 6px;
-            border: 3px solid #f0f0f0;
-          }
-          .custom-scrollbar {
-            scrollbar-width: thin;
-            scrollbar-color: #a0a0a0 #f0f0f0;
-          }
-        `}
-      </style>
+
+     <style>
+{`
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #0e0e10;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #333;
+    border-radius: 10px;
+    border: 2px solid #0e0e10;
+  }
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #333 #0e0e10;
+  }
+
+  ::selection {
+    background: #00e5ff44;
+  }
+
+  .starry-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(white 1px, transparent 1px),
+                radial-gradient(white 1px, transparent 1px);
+    background-size: 80px 80px;
+    background-position: 0 0, 40px 40px;
+    animation: twinkle 15s linear infinite;
+    opacity: 0.2;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  @keyframes twinkle {
+    0% {
+      transform: translateY(0px);
+    }
+    100% {
+      transform: translateY(-100px);
+    }
+  }
+`}
+</style>
+
     </>
   );
 }
 
 const styles = {
-  outermostdiv: {
-    maxHeight: "83vh",
-    height: "100%",
-    width: "100%",
-    overflowY: "auto",
-    overflowX: "hidden",
-  },
+ outermostdiv: {
+  maxHeight: "83vh",
+  height: "100%",
+  width: "100%",
+  overflowY: "auto",
+  overflowX: "hidden",
+  backgroundColor: "#0e0e10",
+  position: "relative",
+  zIndex: 1,
+},
   allmessagesDiv: {
-    height: "100%",
-    width: "100%",
-    backgroundImage: "url('./chat_back.webp')",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    opacity: "0.8",
-    padding: "10px 16px",
-    overflowY: "scroll",
-  },
+  height: "100%",
+  width: "100%",
+  padding: "10px 16px",
+  overflowY: "scroll",
+  position: "relative",
+  zIndex: 2,
+},
   messageText: {
-    maxWidth: "400px",
+    maxWidth: "420px",
     wordWrap: "break-word",
+    color: "#e0e0e0",
   },
   timeWithStatus: {
     display: "flex",
@@ -170,7 +195,7 @@ const styles = {
   },
   timeStyle: {
     fontSize: "0.75rem",
-    color: "#999",
+    color: "#aaa",
   },
   messageStatus: {
     fontSize: "0.75rem",
@@ -179,22 +204,35 @@ const styles = {
     position: "absolute",
     top: "3rem",
     right: "3rem",
+    zIndex: 5,
   },
 };
 
 const dynamicStyles = (message, userInfo) => ({
   singleMessage: {
     display: "flex",
-    justifyContent:
-      message.senderId === userInfo.id ? "flex-end" : "flex-start",
-    padding: "4px 0",
+    justifyContent: message.senderId === userInfo.id ? "flex-end" : "flex-start",
+    padding: "6px 0",
+    zIndex: 2,
   },
-  messageBubble: {
-    backgroundColor: message.senderId === userInfo.id ? "#DCF8C6" : "#FFF",
-    borderRadius: "12px",
-    padding: "8px",
-    boxShadow: "0 1px 1px rgba(0,0,0,0.1)",
-  },
+messageBubble: {
+  background: message.senderId === userInfo.id
+    ? "linear-gradient(135deg, #3f51b5, #5c6bc0, #7986cb)" // Deep blue-indigo gradient
+    : "linear-gradient(to right, #1a1a2f, #2b2b3d)", 
+  color: "#ffffff",
+  borderRadius: "16px",
+  padding: "12px 16px",
+  boxShadow: message.senderId === userInfo.id
+    ? "0 0 12px #00c85388"
+    : "0 0 12px #2a2a4088",
+  fontSize: "1rem",
+  backdropFilter: "blur(8px)",
+  transition: "transform 0.2s ease-in-out",
+  transform: "scale(1)",
+  maxWidth: "80%",
+  wordWrap: "break-word",
+},
+
 });
 
 export default ChatContainer;

@@ -66,58 +66,53 @@ function ChatHeader() {
 
 const styles = {
   outermostContainer: {
-    // backgroundColor: "#f5f5f5",
     height: "3.5rem",
-    borderBottom: "1.5px solid black",
+    borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
     display: "grid",
     gridTemplateColumns: "3fr 1.3fr",
-    paddingLeft:"0.3rem",
-    paddingRight:"0.4rem"
+    padding: "0 0.75rem",
+    backgroundColor: "#121417cc", // semi-transparent dark
+    backdropFilter: "blur(10px)",
+    WebkitBackdropFilter: "blur(10px)",
+    alignItems: "center",
   },
   leftContainer: {
     display: "flex",
-    flexDirection: "row",
-    // justifyContent: "center",
     alignItems: "center",
-    // border: "2px solid black",
-    // backgroundColor:"yellow"
-  },
-  rightContainer: {
-    // border: "2px solid pink",
-    // backgroundColor:"blue",
-    display:"flex",
-    gap: "1rem",
-    alignItems:"center",
-    justifyContent:"right"
+    gap: "0.6rem",
   },
   AvatarDiv: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    // border: "1px solid red",
-    marginRight: "0.4rem"
   },
   nameWithOnlineStatus: {
     display: "flex",
     flexDirection: "column",
-    // alignItems: "center",
-    // justifyContent: "center",
-    // border: "1px solid green",
   },
   NameStyle: {
-    fontSize:"1.2rem"
+    fontSize: "1.05rem",
+    color: "#f1f1f1",
+    fontWeight: 600,
   },
   statusStyle: {
-    fontSize: "0.8rem",
-    justifyContent:"left",
-    marginLeft:"0.2rem",
-    // backgroundColor: "red",
+    fontSize: "0.78rem",
+    color: "#77e88d",
+    marginLeft: "0.2rem",
+  },
+  rightContainer: {
+    display: "flex",
+    justifyContent: "flex-end",
+    alignItems: "center",
+    gap: "1.2rem",
   },
   IoIcon: {
-    color: "black",
-    fontSize: "1.3rem",
+    color: "#cfd8dc",
+    fontSize: "1.25rem",
+    cursor: "pointer",
+    transition: "color 0.3s ease, transform 0.3s ease",
   },
-
 };
+
 
 export default ChatHeader;
